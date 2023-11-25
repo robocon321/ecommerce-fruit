@@ -8,14 +8,26 @@ const register = async (req, res) => {
         username,
         password
     } = req.body;
-    try {
-        const user = await User.create({
-            username,
-            password
-        });
-        res.status(201).json('Create user successfully!');
-    } catch (e) {
-        res.status(400).json('User already existed')
+    let error = "";
+    if(username == null || username.trim() == "") {
+        error += "Username is not blank";      
+    }
+    if(password == null || password == "") {
+        error += "Password is not blank";      
+    }
+
+    if(error == "") {
+        try {
+            const user = await User.create({
+                username,
+                password
+            });
+            res.status(201).json('Create user successfully!');
+        } catch (e) {
+            res.status(400).json('User already existed');
+        }    
+    } else {
+        res.status(400).json(error);        
     }
 };
 
@@ -33,9 +45,7 @@ const login = async (req, res) => {
         }
     });
     if (user === null) {
-        res.status(401).json({
-            message: 'Invalid credentials'
-        });
+        res.status(401).json('Invalid credentials');
     } else {
           const token = jwt.sign(
             {

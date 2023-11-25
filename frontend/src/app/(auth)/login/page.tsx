@@ -1,15 +1,41 @@
+"use client";
+
+import { useContext } from "react";
+import { LoginContext } from "./_provider/LoginProvider";
+import { LoginContextType } from "./_type/LoginType";
+import Loading from "@/components/Loading/Loading";
+
 export default function Login(props: any) {
+  const { loginRequest, setLoginRequest, onSubmit, status } = useContext(
+    LoginContext
+  ) as LoginContextType;
+  const onChangeField = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setLoginRequest({
+      ...loginRequest,
+      [e.target.name]: e.target.value,
+    });
+
   return (
     <>
       <div className="wrapper">
         <div className="title">Login Form</div>
-        <form action="#">
+        <form>
           <div className="field">
-            <input type="text" required />
+            <input
+              type="text"
+              name="username"
+              required
+              onChange={onChangeField}
+            />
             <label>Email Address</label>
           </div>
           <div className="field">
-            <input type="password" required />
+            <input
+              type="password"
+              name="password"
+              required
+              onChange={onChangeField}
+            />
             <label>Password</label>
           </div>
           <div className="content">
@@ -21,11 +47,19 @@ export default function Login(props: any) {
               <a href="#">Forgot password?</a>
             </div>
           </div>
+          {status.error && <div className="error">{status.error}</div>}
           <div className="field">
-            <input type="submit" value="Login" />
+            <input
+              type="submit"
+              value="Login"
+              onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                e.preventDefault();
+                onSubmit();
+              }}
+            />
           </div>
           <div className="flex">
-            <button type="button" className="auth-with-google-btn" >
+            <button type="button" className="auth-with-google-btn">
               Log in with Google
             </button>
           </div>
@@ -34,6 +68,7 @@ export default function Login(props: any) {
           </div>
         </form>
       </div>
+      {status.isLoading && <Loading />}
     </>
   );
 }

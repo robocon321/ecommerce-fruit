@@ -10,7 +10,11 @@ const nextConfig = {
         @import "static/sass/_variable.scss";
         @import "static/sass/_responsive.scss";
         `
-    }
+    },
+    env: {
+        BACKEND_URL: 'http://localhost:8080',
+    },
+
 }
 
 module.exports = nextConfig
