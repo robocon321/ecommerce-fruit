@@ -1,7 +1,9 @@
 const db = require('../models')
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+
 const User = db.User;
+const Role = db.Role;
 
 const register = async (req, res) => {
     const {
@@ -22,6 +24,12 @@ const register = async (req, res) => {
                 username,
                 password
             });
+
+            const [role, created] = await Role.findOrCreate({
+                where: { role_name: 'CLIENT' },
+            });
+            user.addRole(role);
+            
             res.status(201).json('Create user successfully!');
         } catch (e) {
             res.status(400).json('User already existed');
