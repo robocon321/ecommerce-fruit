@@ -1,0 +1,22 @@
+### <Auth>
+GET http://localhost:8080/login
+
+### 
+POST http://localhost:8080/register
+content-type: application/json
+
+{
+    "username": "robocon321",
+    "password": "0123456789"
+}
+
+### 
+POST http://localhost:8080/login
+content-type: application/json
+
+{
+    "username": "robocon321",
+    "password": "0123456789"
+}
+
+### </Auth>
