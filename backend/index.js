@@ -1,4 +1,5 @@
 const authRoute = require('./src/routes/AuthRoute')
+const userRoute = require('./src/routes/UserRoute')
 const roleRoute = require('./src/routes/RoleRoute')
 const categoryRoute = require('./src/routes/CategoryRoute')
 
@@ -14,6 +15,7 @@ app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-
 app.use(express.static('public'))
 
 app.use("/", authRoute);
+app.use("/user", userRoute);
 app.use("/role", roleRoute);
 app.use("/category", categoryRoute);
 
