@@ -1,0 +1,123 @@
+###
+POST http://localhost:8080/role
+content-type: application/json
+
+{
+    "role_name": "CLIENT"
+}
+
+###
+POST http://localhost:8080/role
+content-type: application/json
+
+{
+    "role_name": "ADMIN"
+}
+
+###
+POST http://localhost:8080/register
+content-type: application/json
+
+{
+    "username": "robocon321",
+    "password": "0123456789"
+}
+
+###
+POST http://localhost:8080/category
+content-type: application/json
+
+{
+    "name": "Fresh Meat",
+    "image": "fresh-meat.png"
+}
+
+###
+POST http://localhost:8080/category
+content-type: application/json
+
+{
+    "name": "Vegetables",
+    "image": "vegetables.jpg"
+}
+
+###
+POST http://localhost:8080/category
+content-type: application/json
+
+{
+    "name": "Fruit & Nut Gifts",
+    "image": "fruit-nut-gifts.jpg"
+}
+
+###
+POST http://localhost:8080/category
+content-type: application/json
+
+{
+    "name": "Fresh Berries",
+    "image": "fresh-berries.jpg"
+}
+
+###
+POST http://localhost:8080/category
+content-type: application/json
+
+{
+    "name": "Ocean Foods",
+    "image": "ocean-foods.jpeg"
+}
+
+###
+POST http://localhost:8080/category
+content-type: application/json
+
+{
+    "name": "Butter & Eggs",
+    "image": "butter-eggs.jpg"
+}
+
+###
+POST http://localhost:8080/category
+content-type: application/json
+
+{
+    "name": "Fastfood",
+    "image": "fastfood.jpg"
+}
+
+###
+POST http://localhost:8080/category
+content-type: application/json
+
+{
+    "name": "Fesh Onion",
+    "image": "fresh-onion.jpg"
+}
+
+###
+POST http://localhost:8080/category
+content-type: application/json
+
+{
+    "name": "Papayaya & Crisps",
+    "image": "papayaya-crisps.jpg"
+}
+
+###
+POST http://localhost:8080/category
+content-type: application/json
+
+{
+    "name": "Oatmeal",
+    "image": "oatmeal.jpg"
+}
+
+###
+POST http://localhost:8080/category
+content-type: application/json
+
+{
+    "name": "Fesh Bananas",
+    "image": "fresh-bananas.jpeg"
+}

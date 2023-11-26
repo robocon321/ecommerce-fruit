@@ -67,8 +67,25 @@ const login = async (req, res) => {
     }
 };
 
+const loadUser = async (req, res) => {
+    const token = req.header('Authorization');
+    if (!token) return res.status(401).json({ message: 'Token not found' });
+  
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+      if (err) return res.status(403).json({ message: 'Invalid token' });
+      const user = await User.findByPk(decoded.data, {
+        include: [{ model: Role, through: 'UserRole' }]
+      });
+
+      return res.status(200).json({
+        username: user.username,
+        roles: user.Roles.map(item => item.role_name)
+      });
+    });
+}
 
 module.exports = {
     register,
-    login
+    login,
+    loadUser
 }

@@ -19,4 +19,8 @@ content-type: application/json
     "password": "0123456789"
 }
 
+###
+POST http://localhost:8080/loadUser
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxNywiZXhwIjoxNzAwOTM1Mzc0LCJpYXQiOjE3MDA5MjgxNzR9.aPYiVXju2hb23NB7H8hLy5dMFdY0fpFKxjp-WQ2FFhU
+
 ### </Auth>

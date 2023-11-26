@@ -5,31 +5,31 @@ const {
 
 module.exports = (sequelize, DataTypes) => {
 
-    class User extends Model {}
+    class Category extends Model {}
 
-    User.init({
+    Category.init({
         id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true
         },
-        username: {
+        name: {
             type: DataTypes.STRING(100),
             allowNull: false,
             unique: true
         },
-        password: {
+        image: {
             type: DataTypes.STRING(100),
-            allowNull: false
+            allowNull: false            
         }
     }, {
         sequelize,
-        modelName: 'User',
+        modelName: 'Category',
         timestamps: true,
         createdAt: false,
         updatedAt: false,
         deletedAt: 'deleteAt'
     });
 
-    return User;
+    return Category;
 }
