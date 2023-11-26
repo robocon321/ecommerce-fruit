@@ -1,10 +1,15 @@
 "use client";
 
+import { useContext } from "react";
 import "./page.scss";
 import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { MainContext } from "../_provider/MainProvider";
+import { MainContextType } from "../_type/MainType";
 
 export default function Home(props: any) {
+  const { categories } = useContext(MainContext) as MainContextType;
+
   return (
     <>
       {/* Categories Section Begin */}
@@ -19,16 +24,19 @@ export default function Home(props: any) {
             modules={[Pagination, Navigation]}
             className="mySwiper"
           >
-            <SwiperSlide>
-              <div
-                className="categories__item set-bg"
-                style={{ backgroundImage: "url(img/categories/cat-1.jpg)" }}
-              >
-                <h5>
-                  <a href="#">Fresh Fruit</a>
-                </h5>
-              </div>
-            </SwiperSlide>
+            {categories.map((item) => (
+              <SwiperSlide>
+                <div
+                  className="categories__item set-bg"
+                  style={{ backgroundImage: `url(http://localhost:8080/categories/${item.image})` }}
+                >
+                  <h5>
+                    <a href="#">{item.name}</a>
+                  </h5>
+                </div>
+              </SwiperSlide>
+            ))}
+
             <SwiperSlide>
               <div
                 className="categories__item set-bg"
