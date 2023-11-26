@@ -17,10 +17,23 @@ const addNewCategory = async (req, res) => {
 
     if (error == '') {
         try {
-            const newCategory = await db.Category.create({
-                name, image
+            const user = await db.User.findByPk(req.user_id, {
+                include: [{
+                    model: db.Role,
+                    through: 'UserRole'
+                }]
             });
-            return res.status(200).json(newCategory);
+            const roles = user.Roles.map(item => item.role_name);
+            if (roles.some(item => item == 'ADMIN')) {
+                const newCategory = await db.Category.create({
+                    name,
+                    image
+                });
+                return res.status(200).json(newCategory);
+            } else {
+                return res.status(403).json('Your account dont have permission');
+            }
+
         } catch (e) {
             return res.status(401).json(e.message);
         }
@@ -34,7 +47,7 @@ const getCategories = async (req, res) => {
     try {
         const users = await db.Category.findAll();
         return res.status(200).json(users);
-    } catch(e) {
+    } catch (e) {
         return res.status(500).json("Server have problem");
     }
 }
