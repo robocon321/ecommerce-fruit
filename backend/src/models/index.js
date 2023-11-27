@@ -34,19 +34,23 @@ db.Role.belongsToMany(db.User, {
     through: 'UserRole'
 });
 
-db.User.hasMany(db.Product);
+db.User.hasMany(db.Product, {
+    foreignKey: 'user_id'
+});
 db.Product.belongsTo(db.User, {
     foreignKey: 'user_id'
 });
 
 db.Product.belongsToMany(db.Category, {
     foreignKey: 'category_id',
-    through: 'ProductCategories'
+    through: 'ProductCategories',
+    timestamps: false
 });
 
 db.Category.belongsToMany(db.Product, {
     foreignKey: 'product_id',
-    through: 'ProductCategories'
+    through: 'ProductCategories',
+    timestamps: false
 });
 
 db.sequelize.sync({ force: false })
