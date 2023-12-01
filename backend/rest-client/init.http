@@ -124,3 +124,6 @@ content-type: application/json
 
 ###
 GET http://localhost:8080/product/generate
+
+###
+GET http://localhost:8080/product/getByCategories?categories=2

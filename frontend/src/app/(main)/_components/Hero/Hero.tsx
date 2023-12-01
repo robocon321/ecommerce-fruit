@@ -1,11 +1,10 @@
-"use client"
+import CategoryResponse from "@/types/response/CategoryResponse";
 
-import { useContext } from "react";
-import { MainContext } from "../../_provider/MainProvider";
-import { MainContextType } from "../../_type/MainType";
+type HeroPropsType = {
+  categories: CategoryResponse[]
+}
 
-export default function Hero() {
-  const { categories } = useContext(MainContext) as MainContextType;
+const Hero: React.FC<HeroPropsType> = (props) => {
   return (
     <section className="hero hero-normal">
       <div className="container">
@@ -17,7 +16,7 @@ export default function Hero() {
                 <span>All departments</span>
               </div>
               <ul>
-                {categories.map((item) => (
+                {props.categories.map((item) => (
                   <li key={item.id}>
                     <a href="#">{item.name}</a>
                   </li>
@@ -51,3 +50,5 @@ export default function Hero() {
     </section>
   );
 }
+
+export default Hero;

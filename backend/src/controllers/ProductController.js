@@ -1,8 +1,59 @@
+const { Op } = require("sequelize");
 const db = require("../models");
 const {
     faker
 } = require('@faker-js/faker');
 require('dotenv').config();
+
+const getProductByCategories = async (req, res) => {
+    let productsWithCategories;    
+    let page = 1;
+    let size = 10;
+    
+    const categoryIds = [];
+    if(req.query.categories) {
+        categoryIds.push(...req.query.categories.split(','));
+    }
+
+    if(req.query.page) {
+        page = req.query.page;
+    }
+
+    if(req.query.size) {
+        size = req.query.size;
+    }
+
+    const offset = (page - 1) * size;
+    console.log(size, page, offset, categoryIds, categoryIds == []);
+
+    if(categoryIds.length == 0) {
+        productsWithCategories = await db.Product.findAll({
+            include: [
+              {
+                model: db.Category
+              },
+            ],
+            limit: size,
+            offset
+          });
+    } else {
+        productsWithCategories = await db.Product.findAll({
+            include: [
+              {
+                model: db.Category,
+                where: {
+                    id: {
+                      [Op.in]: categoryIds,
+                    },
+                  },
+              },
+            ],
+            limit: size,
+            offset
+          });
+    }
+    return res.status(200).json(productsWithCategories);
+}
 
 const generateProduct = async (req, res) => {
     const name = faker.commerce.productName();
@@ -92,5 +143,6 @@ const generateLongDescription = (
 }
 
 module.exports = {
-    generateProduct
+    generateProduct,
+    getProductByCategories
 }

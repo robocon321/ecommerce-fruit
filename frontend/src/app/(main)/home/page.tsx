@@ -1,83 +1,271 @@
 "use client";
 
-import { useContext } from "react";
 import "./page.scss";
+import { getCategories } from "@/services/CategoryService";
+import CategoryResponse from "@/types/response/CategoryResponse";
 import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { MainContext } from "../_provider/MainProvider";
-import { MainContextType } from "../_type/MainType";
 
-export default function Home(props: any) {
-  const { categories } = useContext(MainContext) as MainContextType;
+export default async function Home(props: any) {
+  let categories: CategoryResponse[] = [];
+
+  await getCategories()
+    .then((response) => {
+      categories = response;
+    })
+    .catch((error) => {
+      throw error;
+    });
 
   return (
     <>
       {/* Categories Section Begin */}
       <section className="categories">
         <div className="container">
-          <Swiper
-            slidesPerView={4}
-            spaceBetween={30}
-            pagination={{
-              clickable: true,
-            }}
-            modules={[Pagination, Navigation]}
-            className="mySwiper"
-          >
-            {categories.map((item) => (
-              <SwiperSlide>
-                <div
-                  className="categories__item set-bg"
-                  style={{ backgroundImage: `url(http://localhost:8080/categories/${item.image})` }}
+        <Swiper
+                  slidesPerView={4}
+                  spaceBetween={30}
+                  pagination={{
+                    clickable: true,
+                  }}
+                  modules={[Pagination, Navigation]}
+                  className="mySwiper"
                 >
-                  <h5>
-                    <a href="#">{item.name}</a>
-                  </h5>
-                </div>
-              </SwiperSlide>
-            ))}
-
-            <SwiperSlide>
-              <div
-                className="categories__item set-bg"
-                style={{ backgroundImage: "url(img/categories/cat-2.jpg)" }}
-              >
-                <h5>
-                  <a href="#">Dried Fruit</a>
-                </h5>
-              </div>
-            </SwiperSlide>
-            <SwiperSlide>
-              <div
-                className="categories__item set-bg"
-                style={{ backgroundImage: "url(img/categories/cat-3.jpg)" }}
-              >
-                <h5>
-                  <a href="#">Vegetables</a>
-                </h5>
-              </div>
-            </SwiperSlide>
-            <SwiperSlide>
-              <div
-                className="categories__item set-bg"
-                style={{ backgroundImage: "url(img/categories/cat-4.jpg)" }}
-              >
-                <h5>
-                  <a href="#">drink fruits</a>
-                </h5>
-              </div>
-            </SwiperSlide>
-            <SwiperSlide>
-              <div
-                className="categories__item set-bg"
-                style={{ backgroundImage: "url(img/categories/cat-5.jpg)" }}
-              >
-                <h5>
-                  <a href="#">drink fruits</a>
-                </h5>
-              </div>
-            </SwiperSlide>
-          </Swiper>
+                  <SwiperSlide>
+                    <div className="product__discount__item">
+                      <div
+                        className="product__discount__item__pic set-bg"
+                        style={{
+                          backgroundImage:
+                            "url(/img/product/discount/pd-1.jpg)",
+                        }}
+                      >
+                        <div className="product__discount__percent">-20%</div>
+                        <ul className="product__item__pic__hover">
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-heart"></i>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-retweet"></i>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-shopping-cart"></i>
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                      <div className="product__discount__item__text">
+                        <span>Dried Fruit</span>
+                        <h5>
+                          <a href="#">Raisin’n’nuts</a>
+                        </h5>
+                        <div className="product__item__price">
+                          $30.00 <span>$36.00</span>
+                        </div>
+                      </div>
+                    </div>
+                  </SwiperSlide>
+                  <SwiperSlide>
+                    <div className="product__discount__item">
+                      <div
+                        className="product__discount__item__pic set-bg"
+                        style={{
+                          backgroundImage:
+                            "url(/img/product/discount/pd-2.jpg)",
+                        }}
+                      >
+                        <div className="product__discount__percent">-20%</div>
+                        <ul className="product__item__pic__hover">
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-heart"></i>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-retweet"></i>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-shopping-cart"></i>
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                      <div className="product__discount__item__text">
+                        <span>Vegetables</span>
+                        <h5>
+                          <a href="#">Vegetables’package</a>
+                        </h5>
+                        <div className="product__item__price">
+                          $30.00 <span>$36.00</span>
+                        </div>
+                      </div>
+                    </div>
+                  </SwiperSlide>
+                  <SwiperSlide>
+                    <div className="product__discount__item">
+                      <div
+                        className="product__discount__item__pic set-bg"
+                        style={{
+                          backgroundImage:
+                            "url(/img/product/discount/pd-3.jpg)",
+                        }}
+                      >
+                        <div className="product__discount__percent">-20%</div>
+                        <ul className="product__item__pic__hover">
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-heart"></i>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-retweet"></i>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-shopping-cart"></i>
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                      <div className="product__discount__item__text">
+                        <span>Dried Fruit</span>
+                        <h5>
+                          <a href="#">Mixed Fruitss</a>
+                        </h5>
+                        <div className="product__item__price">
+                          $30.00 <span>$36.00</span>
+                        </div>
+                      </div>
+                    </div>
+                  </SwiperSlide>
+                  <SwiperSlide>
+                    <div className="product__discount__item">
+                      <div
+                        className="product__discount__item__pic set-bg"
+                        style={{
+                          backgroundImage:
+                            "url(/img/product/discount/pd-4.jpg)",
+                        }}
+                      >
+                        <div className="product__discount__percent">-20%</div>
+                        <ul className="product__item__pic__hover">
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-heart"></i>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-retweet"></i>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-shopping-cart"></i>
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                      <div className="product__discount__item__text">
+                        <span>Dried Fruit</span>
+                        <h5>
+                          <a href="#">Raisin’n’nuts</a>
+                        </h5>
+                        <div className="product__item__price">
+                          $30.00 <span>$36.00</span>
+                        </div>
+                      </div>
+                    </div>
+                  </SwiperSlide>
+                  <SwiperSlide>
+                    <div className="product__discount__item">
+                      <div
+                        className="product__discount__item__pic set-bg"
+                        style={{
+                          backgroundImage:
+                            "url(/img/product/discount/pd-5.jpg)",
+                        }}
+                      >
+                        <div className="product__discount__percent">-20%</div>
+                        <ul className="product__item__pic__hover">
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-heart"></i>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-retweet"></i>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-shopping-cart"></i>
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                      <div className="product__discount__item__text">
+                        <span>Dried Fruit</span>
+                        <h5>
+                          <a href="#">Raisin’n’nuts</a>
+                        </h5>
+                        <div className="product__item__price">
+                          $30.00 <span>$36.00</span>
+                        </div>
+                      </div>
+                    </div>
+                  </SwiperSlide>
+                  <SwiperSlide>
+                    <div className="product__discount__item">
+                      <div
+                        className="product__discount__item__pic set-bg"
+                        style={{
+                          backgroundImage:
+                            "url(/img/product/discount/pd-6.jpg)",
+                        }}
+                      >
+                        <div className="product__discount__percent">-20%</div>
+                        <ul className="product__item__pic__hover">
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-heart"></i>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-retweet"></i>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="#">
+                              <i className="fa fa-shopping-cart"></i>
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                      <div className="product__discount__item__text">
+                        <span>Dried Fruit</span>
+                        <h5>
+                          <a href="#">Raisin’n’nuts</a>
+                        </h5>
+                        <div className="product__item__price">
+                          $30.00 <span>$36.00</span>
+                        </div>
+                      </div>
+                    </div>
+                  </SwiperSlide>
+                </Swiper>
         </div>
       </section>
       {/* Categories Section End */}

@@ -1,4 +1,6 @@
-export const getCategories = async () : Promise<any> => {
+import CategoryResponse from "@/types/response/CategoryResponse";
+
+export const getCategories = async () : Promise<CategoryResponse[]> => {
     try {
         const response = await fetch(`${process.env.BACKEND_URL}/category`, {
             method: "GET"

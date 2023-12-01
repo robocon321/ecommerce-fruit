@@ -1,4 +1,4 @@
-import AuthRequest from "@/types/AuthRequest";
+import AuthRequest from "@/types/request/AuthRequest";
 
 export const login = async (request: AuthRequest) : Promise<any> => {
     try {
