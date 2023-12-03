@@ -25,7 +25,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
             allowNull: false,
         },
-        price: {
+        real_price: {
+            type: DataTypes.FLOAT,
+            allowNull: false,
+        },
+        sale_price: {
             type: DataTypes.FLOAT,
             allowNull: false,
         },

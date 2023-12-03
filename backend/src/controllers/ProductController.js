@@ -1,4 +1,6 @@
-const { Op } = require("sequelize");
+const {
+    Op
+} = require("sequelize");
 const db = require("../models");
 const {
     faker
@@ -6,59 +8,89 @@ const {
 require('dotenv').config();
 
 const getProductByCategories = async (req, res) => {
-    let productsWithCategories;    
+    let productsWithCategories;
     let page = 1;
     let size = 10;
-    
+    let sortBy = [];
+    let sortType = [];
+    let sort = [];
+
     const categoryIds = [];
-    if(req.query.categories) {
+    if (req.query.categories) {
         categoryIds.push(...req.query.categories.split(','));
     }
 
-    if(req.query.page) {
-        page = req.query.page;
+    if (req.query.page) {
+        page = parseInt(req.query.page);
     }
 
-    if(req.query.size) {
-        size = req.query.size;
+    if (req.query.size) {
+        size = parseInt(req.query.size);
+    }
+
+    if (req.query.sortBy) {
+        sortBy.push(...req.query.sortBy.split(','));
+    }
+
+    if (req.query.sortType) {
+        sortType.push(...req.query.sortType.split(','));
+    }
+
+    if (sortBy.length == sortType.length) {
+        for (var i = 0; i < sortBy.length; i++) {
+            sort.push([sortBy[i], sortType[i]]);
+        }
     }
 
     const offset = (page - 1) * size;
-    console.log(size, page, offset, categoryIds, categoryIds == []);
 
-    if(categoryIds.length == 0) {
-        productsWithCategories = await db.Product.findAll({
-            include: [
-              {
-                model: db.Category
-              },
-            ],
-            limit: size,
-            offset
-          });
-    } else {
-        productsWithCategories = await db.Product.findAll({
-            include: [
-              {
-                model: db.Category,
-                where: {
-                    id: {
-                      [Op.in]: categoryIds,
+    console.log(sort);
+    
+    try {
+        if (categoryIds.length == 0) {
+            productsWithCategories = await db.Product.findAll({
+                attributes: ['id', 'name', 'images', 'real_price', 'sale_price', 'createdAt'],
+                include: [{
+                    model: db.Category,
+                    attributes: [],
+                }, ],
+                limit: size,
+                offset,
+                order: sort
+            });
+        } else {
+            productsWithCategories = await db.Product.findAll({
+                attributes: ['id', 'name', 'images', 'real_price', 'sale_price', 'createdAt'],
+                include: [{
+                    model: db.Category,
+                    attributes: [],
+                    where: {
+                        id: {
+                            [Op.in]: categoryIds,
+                        },
                     },
-                  },
-              },
-            ],
-            limit: size,
-            offset
-          });
+                }, ],
+                limit: size,
+                offset,
+                order: sort
+            });
+        }
+        return res.status(200).json(productsWithCategories);
+
+    } catch (error) {
+        return res.status(401).json(error.message);
     }
-    return res.status(200).json(productsWithCategories);
 }
 
 const generateProduct = async (req, res) => {
     const name = faker.commerce.productName();
     const short_description = faker.commerce.productDescription();
-    const price = faker.number.float({
+    const real_price = faker.number.float({
+        min: 10,
+        max: 1000,
+        precision: 0.01
+    });
+    const sale_price = faker.number.float({
         min: 10,
         max: 1000,
         precision: 0.01
@@ -84,7 +116,8 @@ const generateProduct = async (req, res) => {
         name,
         short_description,
         long_description,
-        price,
+        real_price,
+        sale_price,
         stock,
         weight,
         images
@@ -97,39 +130,48 @@ const generateProduct = async (req, res) => {
         await newProduct.setUser(userOwner);
 
         return res.status(201).json(newProduct);
-    } catch(e) {
+    } catch (e) {
         return res.status(401).json(e.message);
 
-    }  
+    }
 
 }
 
 const generateCategories = async () => {
     let categories = [];
 
-    let count = faker.number.int({min: 1, max: 3});
+    let count = faker.number.int({
+        min: 1,
+        max: 3
+    });
 
-    while(count > 0) {
-        let categoryId = faker.number.int({min: 1, max: 11});
-        if(categories.some(item => item.id == categoryId)) continue;
+    while (count > 0) {
+        let categoryId = faker.number.int({
+            min: 1,
+            max: 11
+        });
+        if (categories.some(item => item.id == categoryId)) continue;
         else {
             const category = await db.Category.findByPk(categoryId);
             categories.push(category);
-            count --;
+            count--;
         }
     }
     return categories;
 }
 
 const generateArrayImage = () => {
-    let count = faker.number.int({min: 4, max: 10});
+    let count = faker.number.int({
+        min: 4,
+        max: 10
+    });
     let images = [];
-    while(count > 0) {
+    while (count > 0) {
         let image = faker.image.urlLoremFlickr({
             category: 'food'
         });
         images.push(image);
-        count --;
+        count--;
     }
 
     return images.join(",");
