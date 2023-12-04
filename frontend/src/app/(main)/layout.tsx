@@ -11,10 +11,10 @@ import { Inter } from "next/font/google";
 import { use } from "react";
 import "swiper/css";
 import "swiper/css/pagination";
-import Footer from "./_components/Footer/Footer";
-import Header from "./_components/Header/Header";
-import Hero from "./_components/Hero/Hero";
-import HumbergerMenu from "./_components/HumbergerMenu/HumbergerMenu";
+import Footer from "./_components/Footer";
+import Header from "./_components/Header";
+import Hero from "./_components/Hero";
+import HumbergerMenu from "./_components/HumbergerMenu";
 
 const inter = Inter({ subsets: ["latin"] });
 
