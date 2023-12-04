@@ -1,23 +1,21 @@
 const { faker } = require('@faker-js/faker');
 const db = require('../models');
-const { generateProductId, generateUserId } = require('../utils/generateData');
+const { generateBlogId, generateUserId } = require('../utils/generateData');
 require('dotenv').config();
 
-const generateReviewProduct = async (req, res) => {
+const generateReviewBlog = async (req, res) => {
     try {
-        const productId = await generateProductId();
+        const blogId = await generateBlogId();
         const userId = await generateUserId();
         const comment = faker.lorem.sentences({
             min: 1,
             max: 3
         });
-        const star = faker.number.int({min: 1, max: 5});
 
-        const review = await db.ReviewProduct.create({
-            product_id: productId,
+        const review = await db.ReviewBlog.create({
+            blog_id: blogId,
             user_id: userId,
             comment,
-            star
         })
 
         return res.status(200).json(review); 
@@ -28,5 +26,5 @@ const generateReviewProduct = async (req, res) => {
 }
 
 module.exports = {
-    generateReviewProduct
+    generateReviewBlog
 }

@@ -4,6 +4,8 @@ const roleRoute = require('./src/routes/RoleRoute')
 const categoryRoute = require('./src/routes/CategoryRoute')
 const productRoute = require('./src/routes/ProductRoute')
 const reviewProductRoute = require('./src/routes/ReviewProductRoute')
+const blogRoute = require('./src/routes/BlogRoute')
+const reviewBlogRoute = require('./src/routes/ReviewBlogRoute')
 
 const express = require('express');
 const bodyParser = require('body-parser')
@@ -26,6 +28,8 @@ app.use("/role", roleRoute);
 app.use("/category", categoryRoute);
 app.use("/product", productRoute);
 app.use("/review-product", reviewProductRoute);
+app.use("/blog", blogRoute);
+app.use("/review-blog", reviewBlogRoute);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');

@@ -5,6 +5,7 @@ const db = require("../models");
 const {
     faker
 } = require('@faker-js/faker');
+const { generateLongDescription, generateCategories } = require("../utils/generateData");
 require('dotenv').config();
 
 const getProductByCategories = async (req, res) => {
@@ -221,53 +222,6 @@ const generateProduct = async (req, res) => {
 
     }
 
-}
-
-const generateCategories = async () => {
-    let categories = [];
-
-    let count = faker.number.int({
-        min: 1,
-        max: 3
-    });
-
-    while (count > 0) {
-        let categoryId = faker.number.int({
-            min: 1,
-            max: 11
-        });
-        if (categories.some(item => item.id == categoryId)) continue;
-        else {
-            const category = await db.Category.findByPk(categoryId);
-            categories.push(category);
-            count--;
-        }
-    }
-    return categories;
-}
-
-const generateArrayImage = () => {
-    let count = faker.number.int({
-        min: 4,
-        max: 10
-    });
-    let images = [];
-    while (count > 0) {
-        let image = faker.image.urlLoremFlickr({
-            category: 'food'
-        });
-        images.push(image);
-        count--;
-    }
-
-    return images.join(",");
-}
-
-const generateLongDescription = (
-    name,
-    short_description,
-    images) => {
-    return `<h1>${name}</h1><img src='${images.split(",")[0]}' alt='Not found' /><br /><b>${short_description}</b><p>${faker.lorem.paragraph({min: 5, max: 10})}</p><img src='${faker.image.urlLoremFlickr({ category: 'food' })}' alt='Not found' /><br /><h2>${faker.commerce.productAdjective()}</h2><p>${faker.lorem.paragraph({min: 5, max: 10})}</p><h2>${faker.commerce.productMaterial()}</h2><p>${faker.lorem.paragraph({min: 5, max: 10})}</p>`
 }
 
 module.exports = {

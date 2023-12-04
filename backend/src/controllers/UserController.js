@@ -39,5 +39,5 @@ const addNewUser = async (req, res) => {
 };
 
 module.exports = {
-    addNewUser
+    addNewUser,
 }

@@ -24,6 +24,8 @@ db.UserRole = require('./UserRole.js')(sequelize, DataTypes);
 db.Product = require('./Product.js')(sequelize, DataTypes);
 db.Category = require('./Category.js')(sequelize, DataTypes);
 db.ReviewProduct = require('./ReviewProduct.js')(sequelize, DataTypes);
+db.Blog = require('./Blog.js')(sequelize, DataTypes);
+db.ReviewBlog = require('./ReviewBlog.js')(sequelize, DataTypes);
 
 db.User.belongsToMany(db.Role, {
     foreignKey: 'role_id',
@@ -58,12 +60,38 @@ db.Category.belongsToMany(db.Product, {
 db.Product.hasMany(db.ReviewProduct, {
     foreignKey: 'product_id'
 });
-db.ReviewProduct.belongsTo(db.Product);
 
 db.User.hasMany(db.ReviewProduct, {
     foreignKey: 'user_id'
 });
-db.ReviewProduct.belongsTo(db.User);
+
+db.User.hasMany(db.Blog, {
+    foreignKey: 'user_id'
+});
+
+db.Blog.belongsTo(db.User, {
+    foreignKey: 'user_id'
+});
+
+db.Blog.belongsToMany(db.Category, {
+    foreignKey: 'category_id',
+    through: 'BlogCategories',
+    timestamps: false
+});
+
+db.Category.belongsToMany(db.Blog, {
+    foreignKey: 'blog_id',
+    through: 'BlogCategories',
+    timestamps: false
+});
+
+db.Blog.hasMany(db.ReviewBlog, {
+    foreignKey: 'blog_id'
+});
+
+db.User.hasMany(db.ReviewBlog, {
+    foreignKey: 'user_id'
+});
 
 
 db.sequelize.sync({ force: false })

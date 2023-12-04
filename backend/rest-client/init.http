@@ -200,3 +200,9 @@ GET http://localhost:8080/product/generate
 
 ###
 GET http://localhost:8080/review-product/generate
+
+###
+GET http://localhost:8080/blog/generate
+
+###
+GET http://localhost:8080/review-blog/generate
