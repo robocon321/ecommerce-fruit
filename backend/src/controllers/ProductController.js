@@ -44,8 +44,6 @@ const getProductByCategories = async (req, res) => {
 
     const offset = (page - 1) * size;
 
-    console.log(sort);
-    
     try {
         if (categoryIds.length == 0) {
             productsWithCategories = await db.Product.findAll({
@@ -76,6 +74,94 @@ const getProductByCategories = async (req, res) => {
             });
         }
         return res.status(200).json(productsWithCategories);
+
+    } catch (error) {
+        return res.status(401).json(error.message);
+    }
+}
+
+const getProductByRatingCount = async (req, res) => {
+    let page = 1;
+    let size = 10;
+
+    if (req.query.page) {
+        page = parseInt(req.query.page);
+    }
+
+    if (req.query.size) {
+        size = parseInt(req.query.size);
+    }
+
+    const offset = (page - 1) * size;
+    const order = [[db.sequelize.literal('review_count'), 'DESC']];
+
+    try {
+        products = await db.Product.findAll({
+            attributes: [
+                'id',
+                'name',
+                'images',
+                'real_price', 
+                'sale_price', 
+                'createdAt', 
+                [db.sequelize.fn('COUNT', db.sequelize.col('ReviewProducts.id')), 'review_count'],
+            ],
+            include: {
+                model: db.ReviewProduct,
+                as: 'ReviewProducts',
+                attributes: [],
+                duplicating: false,
+            },
+            group: ['Product.id'], 
+            order,
+            limit: size,
+            offset,
+        });
+        return res.status(200).json(products);
+
+    } catch (error) {
+        return res.status(401).json(error.message);
+    }
+}
+
+const getProductByRatingAverage = async (req, res) => {
+    let page = 1;
+    let size = 10;
+
+    if (req.query.page) {
+        page = parseInt(req.query.page);
+    }
+
+    if (req.query.size) {
+        size = parseInt(req.query.size);
+    }
+
+    const offset = (page - 1) * size;
+    const order = [[db.sequelize.literal('rating_avg'), 'DESC']];
+
+    try {
+        products = await db.Product.findAll({
+            attributes: [
+                'id',
+                'name',
+                'images',
+                'real_price', 
+                'sale_price', 
+                'createdAt', 
+                [db.sequelize.fn('AVG', db.sequelize.col('ReviewProducts.star')), 'rating_avg'],
+            ],
+            include: {
+                model: db.ReviewProduct,
+                as: 'ReviewProducts',
+                attributes: [],
+                duplicating: false,
+            },
+            group: ['Product.id'], 
+            order,
+            limit: size,
+            offset,
+        });
+        return res.status(200).json(products);
 
     } catch (error) {
         return res.status(401).json(error.message);
@@ -186,5 +272,7 @@ const generateLongDescription = (
 
 module.exports = {
     generateProduct,
-    getProductByCategories
+    getProductByCategories,
+    getProductByRatingCount,
+    getProductByRatingAverage
 }

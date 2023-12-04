@@ -24,6 +24,79 @@ content-type: application/json
 }
 
 ###
+POST http://localhost:8080/register
+content-type: application/json
+
+{
+    "username": "tata209",
+    "password": "0123456789"
+}
+
+###
+POST http://localhost:8080/register
+content-type: application/json
+
+{
+    "username": "nizo331",
+    "password": "0123456789"
+}
+
+
+###
+POST http://localhost:8080/register
+content-type: application/json
+
+{
+    "username": "johnhit379",
+    "password": "0123456789"
+}
+
+###
+POST http://localhost:8080/register
+content-type: application/json
+
+{
+    "username": "superstar228",
+    "password": "0123456789"
+}
+
+###
+POST http://localhost:8080/register
+content-type: application/json
+
+{
+    "username": "olala071",
+    "password": "0123456789"
+}
+
+###
+POST http://localhost:8080/register
+content-type: application/json
+
+{
+    "username": "messicoz121",
+    "password": "0123456789"
+}
+
+###
+POST http://localhost:8080/register
+content-type: application/json
+
+{
+    "username": "crazyhoz001",
+    "password": "0123456789"
+}
+
+###
+POST http://localhost:8080/register
+content-type: application/json
+
+{
+    "username": "mockatow01",
+    "password": "0123456789"
+}
+
+###
 POST http://localhost:8080/category
 content-type: application/json
 
@@ -124,3 +197,6 @@ content-type: application/json
 
 ###
 GET http://localhost:8080/product/generate
+
+###
+GET http://localhost:8080/review-product/generate
