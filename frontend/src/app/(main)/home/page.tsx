@@ -3,17 +3,17 @@ import { use } from "react";
 import CategorySwiper from "./_components/CategorySwiper";
 import { cacheCategories } from "@/utils/category-cache";
 import FeatureProduct from "./_components/FeatureProduct";
-import { cacheProducts } from "@/utils/product-cache";
+import { cacheProductsByCategories } from "@/utils/product-cache";
 import Banner from "./_components/Banner";
 import TopProduct from "./_components/TopProduct";
 
 export default function Home(props: any) {
   const categories = use(cacheCategories());
-  const outstandingProducts = use(cacheProducts([], { size: 12 }));
-  const orangesProducts = use(cacheProducts([1, 2], { size: 12 }));
-  const freshProducts = use(cacheProducts([3, 4], { size: 12 }));
-  const vegetableProducts = use(cacheProducts([5, 6], { size: 12 }));
-  const fastfoodProducts = use(cacheProducts([7, 8], { size: 12 }));
+  const outstandingProducts = use(cacheProductsByCategories([], { size: 12 }));
+  const orangesProducts = use(cacheProductsByCategories([1, 2], { size: 12 }));
+  const freshProducts = use(cacheProductsByCategories([3, 4], { size: 12 }));
+  const vegetableProducts = use(cacheProductsByCategories([5, 6], { size: 12 }));
+  const fastfoodProducts = use(cacheProductsByCategories([7, 8], { size: 12 }));
 
   return (
     <>
