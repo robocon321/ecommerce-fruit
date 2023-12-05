@@ -5,7 +5,10 @@ const db = require("../models");
 const {
     faker
 } = require('@faker-js/faker');
-const { generateLongDescription, generateCategories } = require("../utils/generateData");
+const {
+    generateLongDescription,
+    generateCategories
+} = require("../utils/generateData");
 require('dotenv').config();
 
 const getProductByCategories = async (req, res) => {
@@ -94,7 +97,9 @@ const getProductByRatingCount = async (req, res) => {
     }
 
     const offset = (page - 1) * size;
-    const order = [[db.sequelize.literal('review_count'), 'DESC']];
+    const order = [
+        [db.sequelize.literal('review_count'), 'DESC']
+    ];
 
     try {
         products = await db.Product.findAll({
@@ -102,9 +107,9 @@ const getProductByRatingCount = async (req, res) => {
                 'id',
                 'name',
                 'images',
-                'real_price', 
-                'sale_price', 
-                'createdAt', 
+                'real_price',
+                'sale_price',
+                'createdAt',
                 [db.sequelize.fn('COUNT', db.sequelize.col('ReviewProducts.id')), 'review_count'],
             ],
             include: {
@@ -113,7 +118,7 @@ const getProductByRatingCount = async (req, res) => {
                 attributes: [],
                 duplicating: false,
             },
-            group: ['Product.id'], 
+            group: ['Product.id'],
             order,
             limit: size,
             offset,
@@ -138,7 +143,9 @@ const getProductByRatingAverage = async (req, res) => {
     }
 
     const offset = (page - 1) * size;
-    const order = [[db.sequelize.literal('rating_avg'), 'DESC']];
+    const order = [
+        [db.sequelize.literal('rating_avg'), 'DESC']
+    ];
 
     try {
         products = await db.Product.findAll({
@@ -146,9 +153,9 @@ const getProductByRatingAverage = async (req, res) => {
                 'id',
                 'name',
                 'images',
-                'real_price', 
-                'sale_price', 
-                'createdAt', 
+                'real_price',
+                'sale_price',
+                'createdAt',
                 [db.sequelize.fn('AVG', db.sequelize.col('ReviewProducts.star')), 'rating_avg'],
             ],
             include: {
@@ -157,7 +164,7 @@ const getProductByRatingAverage = async (req, res) => {
                 attributes: [],
                 duplicating: false,
             },
-            group: ['Product.id'], 
+            group: ['Product.id'],
             order,
             limit: size,
             offset,
@@ -167,6 +174,49 @@ const getProductByRatingAverage = async (req, res) => {
     } catch (error) {
         return res.status(401).json(error.message);
     }
+}
+
+const getTopDiscountProduct = async (req, res) => {
+    let page = 1;
+    let size = 10;
+
+    if (req.query.page) {
+        page = parseInt(req.query.page);
+    }
+
+    if (req.query.size) {
+        size = parseInt(req.query.size);
+    }
+
+    const offset = (page - 1) * size;
+    const order = [
+        [[db.sequelize.literal('discount'), 'DESC']]
+    ];
+
+    try {
+        products = await db.Product.findAll({
+            attributes: [
+                'id',
+                'name',
+                'images',
+                'real_price',
+                'sale_price',
+                'createdAt',
+                [
+                    db.sequelize.literal('((real_price - sale_price) * 100 / real_price) '),
+                    'discount'
+                ]
+            ],
+            order,
+            limit: size,
+            offset,
+        });
+        return res.status(200).json(products);
+
+    } catch (error) {
+        return res.status(401).json(error.message);
+    }
+
 }
 
 const generateProduct = async (req, res) => {
@@ -228,5 +278,6 @@ module.exports = {
     generateProduct,
     getProductByCategories,
     getProductByRatingCount,
-    getProductByRatingAverage
+    getProductByRatingAverage,
+    getTopDiscountProduct
 }
