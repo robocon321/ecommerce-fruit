@@ -1,5 +1,5 @@
 import PageRequest from "@/types/request/PageRequest";
-import { ProductSummaryResponse } from "@/types/response/ProductResponse";
+import { ProductDiscountSummaryResponse, ProductSummaryResponse } from "@/types/response/ProductResponse";
 
 export const getProductsByCategories = async (categoryIds?: number[], pageRequest?: PageRequest) : Promise<ProductSummaryResponse[]> => {
     const query: any = {};
@@ -100,6 +100,41 @@ export const getProductsByRatingAverage = async (pageRequest?: PageRequest) : Pr
             method: "GET",
             cache: "force-cache",
             next: { revalidate: 3600, tags: ['product', 'get-product', 'get-product-by-rating-avg'] }
+        });
+
+        const status = response.status;  
+        const data = await response.json();
+
+        if(status == 200) {   
+            (data as ProductSummaryResponse[]).forEach(item => {
+                item.images = item.images.toString().split(',')
+            });
+            return data;
+        } else {
+            throw new Error(data);
+        }
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getProductsByDiscount = async (pageRequest?: PageRequest) : Promise<ProductDiscountSummaryResponse[]> => {
+    const query: any = {};
+    if(pageRequest) {
+        if(pageRequest.size) {
+            query.size = pageRequest.size.toString();
+        }
+    
+        if(pageRequest.page) {
+            query.page = pageRequest.page.toString();
+        }    
+    }
+
+    try {
+        const response = await fetch(`${process.env.BACKEND_URL}/product/getByDiscount?` + new URLSearchParams(query), {
+            method: "GET",
+            cache: "force-cache",
+            next: { revalidate: 3600, tags: ['product', 'get-product', 'get-product-by-discount'] }
         });
 
         const status = response.status;  

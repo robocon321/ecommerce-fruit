@@ -23,3 +23,12 @@ export type ProductSummaryResponse = {
     sale_price: number,
     images: string[],
 }
+
+export type ProductDiscountSummaryResponse = {
+    id: number,
+    name: string,
+    real_price: number,
+    sale_price: number,
+    discount: number,
+    images: string[],
+}

@@ -1,10 +1,11 @@
 import {
   getProductsByCategories,
+  getProductsByDiscount,
   getProductsByRatingAverage,
   getProductsByRatingCount,
 } from "@/services/ProductService";
 import PageRequest from "@/types/request/PageRequest";
-import { ProductSummaryResponse } from "@/types/response/ProductResponse";
+import { ProductDiscountSummaryResponse, ProductSummaryResponse } from "@/types/response/ProductResponse";
 import { cache } from "react";
 
 export const cacheProductsByCategories = cache(
@@ -51,3 +52,19 @@ export const cacheProductsByRatingAverage = cache(
     return products;
   }
 );
+
+export const cacheProductsByDiscount = cache(
+  async (pageRequest?: PageRequest) => {
+    let products: ProductDiscountSummaryResponse[] = [];
+    await getProductsByDiscount(pageRequest)
+      .then((response) => {
+        products = response;
+      })
+      .catch((error) => {
+        throw error;
+      });
+
+    return products;
+  }
+);
+
