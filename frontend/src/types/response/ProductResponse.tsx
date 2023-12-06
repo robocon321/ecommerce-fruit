@@ -1,21 +1,6 @@
 import CategoryResponse from "./CategoryResponse";
-
-export type ProductResponse = {
-    id: number,
-    name: string,
-    short_description: string,
-    long_description: string,
-    real_price: number,
-    sale_price: number,
-    stock:  number,
-    weight: number,
-    images: string[],
-    createAt: Date,
-    updateAt: Date,
-    user_id: number,
-    categories: CategoryResponse[]
-}
-
+import { ReviewProductResponse } from "./ReviewProductResponse";
+import { UserResponse } from "./UserResponse";
 export type ProductSummaryResponse = {
     id: number,
     name: string,
@@ -31,4 +16,24 @@ export type ProductDiscountSummaryResponse = {
     sale_price: number,
     discount: number,
     images: string[],
+}
+
+export type ProductDetailResponse = {
+    id: number,
+    name: string,
+    short_description: string,
+    long_description: string,
+    real_price: number,
+    sale_price: number,
+    stock:  number,
+    weight: number,
+    images: string[],
+    rating_avg: number,
+    rating_count: number,
+    createAt: Date,
+    updateAt: Date,
+    user: UserResponse,
+    reviews: ReviewProductResponse[],
+    categories: CategoryResponse[]
+
 }

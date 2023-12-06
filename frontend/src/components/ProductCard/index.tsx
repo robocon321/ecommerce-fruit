@@ -27,7 +27,7 @@ export default function ProductCard(props: ProductSummaryResponse) {
       </div>
       <div className="featured__item__text">
         <h6>
-          <a href="#">{props.name}</a>
+          <a href={"/product/" + props.id}>{props.name}</a>
         </h6>
         <h5>${props.sale_price}</h5>
       </div>

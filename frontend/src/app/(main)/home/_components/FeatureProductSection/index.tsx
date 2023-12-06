@@ -2,7 +2,7 @@
 
 import { ProductSummaryResponse } from "@/types/response/ProductResponse";
 import { useState } from "react";
-import ProductCard from "./ProductCard";
+import ProductCard from "../../../../../components/ProductCard";
 
 type FeatureProductPropsType = {
   outstandingProducts: ProductSummaryResponse[];

@@ -2,7 +2,7 @@ import { ProductSummaryResponse } from "@/types/response/ProductResponse";
 
 export default function ProductCard(props: ProductSummaryResponse) {
   return (
-    <a href="#" className="latest-product__item">
+    <a href={"/product/" + props.id} className="latest-product__item">
       <div className="latest-product__item__pic">
         <img src={props.images[0]} alt="" />
       </div>

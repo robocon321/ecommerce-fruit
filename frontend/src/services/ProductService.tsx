@@ -1,5 +1,5 @@
 import PageRequest from "@/types/request/PageRequest";
-import { ProductDiscountSummaryResponse, ProductSummaryResponse } from "@/types/response/ProductResponse";
+import { ProductDetailResponse, ProductDiscountSummaryResponse, ProductSummaryResponse } from "@/types/response/ProductResponse";
 
 export const getProductsByCategories = async (categoryIds?: number[], pageRequest?: PageRequest) : Promise<ProductSummaryResponse[]> => {
     const query: any = {};
@@ -41,9 +41,11 @@ export const getProductsByCategories = async (categoryIds?: number[], pageReques
             });
             return data;
         } else {
+            console.log("Error DAta", data);
             throw new Error(data);
         }
     } catch (error) {
+        console.log("Error", error);
         throw error;
     }
 };
@@ -145,6 +147,26 @@ export const getProductsByDiscount = async (pageRequest?: PageRequest) : Promise
                 item.images = item.images.toString().split(',')
             });
             return data;
+        } else {
+            throw new Error(data);
+        }
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getProductById = async (id: string) : Promise<ProductDetailResponse> => {
+    try {
+        const response = await fetch(`${process.env.BACKEND_URL}/product/${id}`, {
+            method: "GET",
+        });
+
+        const status = response.status;  
+        const data = await response.json();
+
+        if(status == 200) {   
+            data.images = data.images.split(',');
+           return data;
         } else {
             throw new Error(data);
         }

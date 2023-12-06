@@ -30,7 +30,7 @@ export default function ProductCard(props: ProductDiscountSummaryResponse) {
       </div>
       <div className="product__discount__item__text">
         <h5>
-          <a href="#">{props.name}</a>
+          <a href={"/product/" + props.id}>{props.name}</a>
         </h5>
         <div className="product__item__price">
           ${props.sale_price} <span>${props.real_price}</span>
