@@ -55,6 +55,7 @@ const getProductByCategories = async (req, res) => {
                 include: [{
                     model: db.Category,
                     attributes: [],
+                    as: 'categories'
                 }, ],
                 limit: size,
                 offset,
@@ -71,6 +72,7 @@ const getProductByCategories = async (req, res) => {
                             [Op.in]: categoryIds,
                         },
                     },
+                    as: 'categories'
                 }, ],
                 limit: size,
                 offset,
@@ -110,11 +112,11 @@ const getProductByRatingCount = async (req, res) => {
                 'real_price',
                 'sale_price',
                 'createdAt',
-                [db.sequelize.fn('COUNT', db.sequelize.col('ReviewProducts.id')), 'review_count'],
+                [db.sequelize.fn('COUNT', db.sequelize.col('reviews.id')), 'review_count'],
             ],
             include: {
                 model: db.ReviewProduct,
-                as: 'ReviewProducts',
+                as: 'reviews',
                 attributes: [],
                 duplicating: false,
             },
@@ -156,11 +158,11 @@ const getProductByRatingAverage = async (req, res) => {
                 'real_price',
                 'sale_price',
                 'createdAt',
-                [db.sequelize.fn('AVG', db.sequelize.col('ReviewProducts.star')), 'rating_avg'],
+                [db.sequelize.fn('AVG', db.sequelize.col('reviews.star')), 'rating_avg'],
             ],
             include: {
                 model: db.ReviewProduct,
-                as: 'ReviewProducts',
+                as: 'reviews',
                 attributes: [],
                 duplicating: false,
             },
@@ -190,7 +192,9 @@ const getTopDiscountProduct = async (req, res) => {
 
     const offset = (page - 1) * size;
     const order = [
-        [[db.sequelize.literal('discount'), 'DESC']]
+        [
+            [db.sequelize.literal('discount'), 'DESC']
+        ]
     ];
 
     try {
@@ -274,10 +278,69 @@ const generateProduct = async (req, res) => {
 
 }
 
+
+const getProductById = async (req, res) => {
+    if (req.params.id) {
+        const id = req.params.id;
+        const product = await db.Product.findByPk(id, {
+            attributes: [
+                "id",
+                "name",
+                "short_description",
+                "long_description",
+                "real_price",
+                "sale_price",
+                "stock",
+                "weight",
+                "images",
+                "createdAt",
+                "updatedAt",
+                [
+                    db.sequelize.literal('((real_price - sale_price) * 100 / real_price) '),
+                    'discount'
+                ],
+                [db.sequelize.fn('AVG', db.sequelize.col('reviews.star')), 'rating_avg'],
+                [db.sequelize.fn('COUNT', db.sequelize.col('reviews.id')), 'rating_count']
+            ],
+            include: [{
+                model: db.ReviewProduct,
+                attributes: ["id", "comment", "star", "createdAt", "updatedAt"],
+                duplicating: false,
+                as: 'reviews',
+                include: {
+                    model: db.User,
+                    duplicating: false,
+                    attributes: ["id", "username"],
+                    as: 'user'
+                }
+            }, {
+                model: db.User,
+                duplicating: false,
+                attributes: ["id", "username"],
+                as: 'user'
+            }, {
+                model: db.Category,
+                duplicating: false,
+                attributes: ["id", "name"],
+                as: 'categories',
+                through: {
+                    attributes: [] // Exclude the attributes of the intermediate table (ProductCategory)
+                }
+            }],
+            group: ['Product.id'],
+        });
+        return res.status(200).json(product);
+    } else {
+        return res.status(400).json('Not found');
+    }
+}
+
+
 module.exports = {
     generateProduct,
     getProductByCategories,
     getProductByRatingCount,
     getProductByRatingAverage,
-    getTopDiscountProduct
+    getTopDiscountProduct,
+    getProductById
 }
