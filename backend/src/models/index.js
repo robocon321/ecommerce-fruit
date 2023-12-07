@@ -28,12 +28,12 @@ db.Blog = require('./Blog.js')(sequelize, DataTypes);
 db.ReviewBlog = require('./ReviewBlog.js')(sequelize, DataTypes);
 
 db.User.belongsToMany(db.Role, {
-    foreignKey: 'role_id',
+    foreignKey: 'user_id',
     through: 'UserRole',
 });
 
 db.Role.belongsToMany(db.User, {
-    foreignKey: 'user_id',
+    foreignKey: 'role_id',
     through: 'UserRole'
 });
 
@@ -47,14 +47,14 @@ db.Product.belongsTo(db.User, {
 });
 
 db.Product.belongsToMany(db.Category, {
-    foreignKey: 'category_id',
+    foreignKey: 'product_id',
     through: 'ProductCategories',
     timestamps: false,
     as: 'categories'
 });
 
 db.Category.belongsToMany(db.Product, {
-    foreignKey: 'product_id',
+    foreignKey: 'category_id',
     through: 'ProductCategories',
     timestamps: false,
     as: 'products'
@@ -84,13 +84,13 @@ db.Blog.belongsTo(db.User, {
 });
 
 db.Blog.belongsToMany(db.Category, {
-    foreignKey: 'category_id',
+    foreignKey: 'blog_id',
     through: 'BlogCategories',
     timestamps: false
 });
 
 db.Category.belongsToMany(db.Blog, {
-    foreignKey: 'blog_id',
+    foreignKey: 'category_id',
     through: 'BlogCategories',
     timestamps: false
 });

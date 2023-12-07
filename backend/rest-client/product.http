@@ -14,4 +14,4 @@ GET http://localhost:8080/product/getByRatingAvg
 GET http://localhost:8080/product/getByDiscount
 
 ###
-GET http://localhost:8080/product/1
+GET http://localhost:8080/product/5

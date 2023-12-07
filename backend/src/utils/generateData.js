@@ -10,13 +10,20 @@ const generateCategories = async () => {
     });
 
     while (count > 0) {
-        let categoryId = faker.number.int({
-            min: 1,
-            max: 11
+        const categoryIds = (await db.User.findAll({
+            attributes: ['id']
+        })).map(item => item.id);
+    
+        const randomIndex = faker.number.int({
+            min: 0,
+            max: categoryIds.length - 1
         });
-        if (categories.some(item => item.id == categoryId)) continue;
+    
+        const randomCategoryId = categoryIds[randomIndex];
+    
+        if (categories.some(item => item.id == randomCategoryId)) continue;
         else {
-            const category = await db.Category.findByPk(categoryId);
+            const category = await db.Category.findByPk(randomCategoryId);
             categories.push(category);
             count--;
         }

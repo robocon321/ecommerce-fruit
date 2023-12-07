@@ -7,7 +7,8 @@ const {
 } = require('@faker-js/faker');
 const {
     generateLongDescription,
-    generateCategories
+    generateCategories,
+    generateUserId
 } = require("../utils/generateData");
 require('dotenv').config();
 
@@ -253,6 +254,8 @@ const generateProduct = async (req, res) => {
     );
     const categories = await generateCategories();
 
+    const userId = await generateUserId();
+
     const data = {
         name,
         short_description,
@@ -265,7 +268,7 @@ const generateProduct = async (req, res) => {
     }
 
     try {
-        const userOwner = await db.User.findByPk(process.env.USER_ID);
+        const userOwner = await db.User.findByPk(userId);
         const newProduct = await db.Product.create(data);
         await newProduct.addCategories(categories);
         await newProduct.setUser(userOwner);
@@ -299,14 +302,14 @@ const getProductById = async (req, res) => {
                     db.sequelize.literal('((real_price - sale_price) * 100 / real_price) '),
                     'discount'
                 ],
-                [db.sequelize.fn('AVG', db.sequelize.col('reviews.star')), 'rating_avg'],
-                [db.sequelize.fn('COUNT', db.sequelize.col('reviews.id')), 'rating_count']
+                // [db.sequelize.fn('AVG', db.sequelize.col('reviews.star')), 'rating_avg'],
+                // [db.sequelize.fn('COUNT', db.sequelize.col('reviews.id')), 'rating_count']
             ],
             include: [{
                 model: db.ReviewProduct,
                 attributes: ["id", "comment", "star", "createdAt", "updatedAt"],
                 duplicating: false,
-                as: 'reviews',
+                as: 'reviews',                
                 include: {
                     model: db.User,
                     duplicating: false,
@@ -326,8 +329,7 @@ const getProductById = async (req, res) => {
                 through: {
                     attributes: [] // Exclude the attributes of the intermediate table (ProductCategory)
                 }
-            }],
-            group: ['Product.id'],
+            }]
         });
         return res.status(200).json(product);
     } else {
