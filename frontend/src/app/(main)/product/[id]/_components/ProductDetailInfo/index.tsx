@@ -1,5 +1,8 @@
 import { ProductDetailResponse } from "@/types/response/ProductResponse";
 import ImageSlider from "./ImageSlider";
+import { useMemo, useState } from "react";
+import RatingForm from "./RatingForm";
+import RatingList from "./RatingList";
 
 type ProductDetailInfoPropsType = {
   product: ProductDetailResponse;
@@ -7,6 +10,14 @@ type ProductDetailInfoPropsType = {
 
 export default function ProductDetailInfo(props: ProductDetailInfoPropsType) {
   const { product } = props;
+  const [additionalIndex, setAdditionalIndex] = useState(0);
+
+  const averageRating = useMemo(() => {
+    const sum = product.reviews.map(item => item.star).reduce((previous, current) => {
+      return previous + current;
+    }, 0);
+    return sum / product.reviews.length;
+  }, [product.reviews]);
 
   return (
     <section className="product-details spad">
@@ -19,20 +30,20 @@ export default function ProductDetailInfo(props: ProductDetailInfoPropsType) {
             <div className="product__details__text">
               <h3>{product.name}</h3>
               <div className="product__details__rating">
-                {Array.from({ length: Math.floor(product.rating_avg) }).map(
+                {Array.from({ length: Math.floor(averageRating) }).map(
                   (item, index) => (
                     <i key={index} className="fa fa-star"></i>
                   )
                 )}
-                {Array.from({ length: 5 - Math.floor(product.rating_avg) }).map(
+                {Math.round(averageRating) != averageRating && (
+                  <i className="fa fa-star-half-o"></i>
+                )}
+                {Array.from({ length: 5 - Math.floor(averageRating) }).map(
                   (item, index) => (
                     <i key={index} className="fa fa-star-o"></i>
                   )
                 )}
-                {Math.round(product.rating_avg) != product.rating_avg && (
-                  <i className="fa fa-star-half-o"></i>
-                )}
-                <span>({product.rating_count} reviews)</span>
+                <span>({product.reviews.length} reviews)</span>
               </div>
               <div className="product__details__price">
                 ${product.sale_price}
@@ -89,31 +100,32 @@ export default function ProductDetailInfo(props: ProductDetailInfoPropsType) {
               <ul className="nav nav-tabs" role="tablist">
                 <li className="nav-item">
                   <a
-                    className="nav-link active"
+                    className={"nav-link" + (additionalIndex == 0 ? " active" : "")}
                     data-toggle="tab"
                     href="#tabs-1"
                     role="tab"
                     aria-selected="true"
+                    onClick={() => setAdditionalIndex(0)}
                   >
                     Description
                   </a>
                 </li>
                 <li className="nav-item">
                   <a
-                    className="nav-link"
+                    className={"nav-link" + (additionalIndex == 1 ? " active" : "")}
                     data-toggle="tab"
-                    href="#tabs-3"
+                    href="#tabs-2"
                     role="tab"
                     aria-selected="false"
+                    onClick={() => setAdditionalIndex(1)}
                   >
-                    Reviews <span>({product.rating_count})</span>
+                    Reviews <span>({product.reviews.length})</span>
                   </a>
                 </li>
               </ul>
               <div className="tab-content">
-                <div className="tab-pane active" id="tabs-1" role="tabpanel">
+                <div className={"tab-pane" + (additionalIndex == 0 ? " active" : "")} id="tabs-1" role="tabpanel">
                   <div className="product__details__tab__desc">
-                    <h6>Products Infomation</h6>
                     <div
                       dangerouslySetInnerHTML={{
                         __html: product.long_description,
@@ -121,33 +133,10 @@ export default function ProductDetailInfo(props: ProductDetailInfoPropsType) {
                     ></div>
                   </div>
                 </div>
-                <div className="tab-pane" id="tabs-2" role="tabpanel">
+                <div className={"tab-pane" + (additionalIndex == 1 ? " active" : "")} id="tabs-2" role="tabpanel">
                   <div className="product__details__tab__desc">
-                    <p>
-                      Vestibulum ac diam sit amet quam vehicula elementum sed
-                      sit amet dui. Pellentesque in ipsum id orci porta dapibus.
-                      Proin eget tortor risus. Vivamus suscipit tortor eget
-                      felis porttitor volutpat. Vestibulum ac diam sit amet quam
-                      vehicula elementum sed sit amet dui. Donec rutrum congue
-                      leo eget malesuada. Vivamus suscipit tortor eget felis
-                      porttitor volutpat. Curabitur arcu erat, accumsan id
-                      imperdiet et, porttitor at sem. Praesent sapien massa,
-                      convallis a pellentesque nec, egestas non nisi. Vestibulum
-                      ac diam sit amet quam vehicula elementum sed sit amet dui.
-                      Vestibulum ante ipsum primis in faucibus orci luctus et
-                      ultrices posuere cubilia Curae; Donec velit neque, auctor
-                      sit amet aliquam vel, ullamcorper sit amet ligula. Proin
-                      eget tortor risus.
-                    </p>
-                    <p>
-                      Praesent sapien massa, convallis a pellentesque nec,
-                      egestas non nisi. Lorem ipsum dolor sit amet, consectetur
-                      adipiscing elit. Mauris blandit aliquet elit, eget
-                      tincidunt nibh pulvinar a. Cras ultricies ligula sed magna
-                      dictum porta. Cras ultricies ligula sed magna dictum
-                      porta. Sed porttitor lectus nibh. Mauris blandit aliquet
-                      elit, eget tincidunt nibh pulvinar a.
-                    </p>
+                      <RatingList reviews={product.reviews} />
+                      <RatingForm />
                   </div>
                 </div>
               </div>

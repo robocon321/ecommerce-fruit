@@ -1,0 +1,30 @@
+.user-rating {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin: 10px;
+
+  .stars {
+    flex-direction: row;
+    justify-content: left;
+
+    .star.active {
+        color: yellow;
+    }
+  }
+}
+
+.username {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.createdAt {
+  color: #888;
+  margin-bottom: 5px;
+}
+
+.content {
+  line-height: 1.5;
+}

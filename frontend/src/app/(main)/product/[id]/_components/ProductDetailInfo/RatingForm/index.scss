@@ -1,0 +1,45 @@
+.rating-form {
+  text-align: center;
+}
+
+.stars {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+}
+
+.stars input[type="radio"] {
+  display: none;
+}
+
+.stars label {
+  font-size: 2em;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.stars label:before {
+  content: "\2605"; /* Unicode character for a star */
+  display: inline-block;
+}
+
+.stars input[type="radio"]:checked ~ label {
+  color: #ffd700; /* Color for selected stars */
+}
+
+.content-input {
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.submit-button {
+  margin-top: 20px;
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1em;
+  border: none;
+  cursor: pointer;
+}

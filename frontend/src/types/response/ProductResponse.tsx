@@ -28,8 +28,6 @@ export type ProductDetailResponse = {
     stock:  number,
     weight: number,
     images: string[],
-    rating_avg: number,
-    rating_count: number,
     createAt: Date,
     updateAt: Date,
     user: UserResponse,
