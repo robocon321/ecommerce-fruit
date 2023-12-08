@@ -1,21 +1,25 @@
 import { ProductDetailResponse } from "@/types/response/ProductResponse";
 import ImageSlider from "./ImageSlider";
-import { useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useMemo, useState } from "react";
 import RatingForm from "./RatingForm";
 import RatingList from "./RatingList";
+import {
+  DetailProductContext,
+  DetailProductContextType,
+} from "../../_provider/DetailProductProvider";
 
-type ProductDetailInfoPropsType = {
-  product: ProductDetailResponse;
-};
-
-export default function ProductDetailInfo(props: ProductDetailInfoPropsType) {
-  const { product } = props;
+export default function ProductDetailInfo(props: any) {
+  const { product } = useContext(
+    DetailProductContext
+  ) as DetailProductContextType;
   const [additionalIndex, setAdditionalIndex] = useState(0);
 
   const averageRating = useMemo(() => {
-    const sum = product.reviews.map(item => item.star).reduce((previous, current) => {
-      return previous + current;
-    }, 0);
+    const sum = product.reviews
+      .map((item) => item.star)
+      .reduce((previous, current) => {
+        return previous + current;
+      }, 0);
     return sum / product.reviews.length;
   }, [product.reviews]);
 
@@ -100,7 +104,9 @@ export default function ProductDetailInfo(props: ProductDetailInfoPropsType) {
               <ul className="nav nav-tabs" role="tablist">
                 <li className="nav-item">
                   <a
-                    className={"nav-link" + (additionalIndex == 0 ? " active" : "")}
+                    className={
+                      "nav-link" + (additionalIndex == 0 ? " active" : "")
+                    }
                     data-toggle="tab"
                     href="#tabs-1"
                     role="tab"
@@ -112,7 +118,9 @@ export default function ProductDetailInfo(props: ProductDetailInfoPropsType) {
                 </li>
                 <li className="nav-item">
                   <a
-                    className={"nav-link" + (additionalIndex == 1 ? " active" : "")}
+                    className={
+                      "nav-link" + (additionalIndex == 1 ? " active" : "")
+                    }
                     data-toggle="tab"
                     href="#tabs-2"
                     role="tab"
@@ -124,7 +132,13 @@ export default function ProductDetailInfo(props: ProductDetailInfoPropsType) {
                 </li>
               </ul>
               <div className="tab-content">
-                <div className={"tab-pane" + (additionalIndex == 0 ? " active" : "")} id="tabs-1" role="tabpanel">
+                <div
+                  className={
+                    "tab-pane" + (additionalIndex == 0 ? " active" : "")
+                  }
+                  id="tabs-1"
+                  role="tabpanel"
+                >
                   <div className="product__details__tab__desc">
                     <div
                       dangerouslySetInnerHTML={{
@@ -133,10 +147,16 @@ export default function ProductDetailInfo(props: ProductDetailInfoPropsType) {
                     ></div>
                   </div>
                 </div>
-                <div className={"tab-pane" + (additionalIndex == 1 ? " active" : "")} id="tabs-2" role="tabpanel">
+                <div
+                  className={
+                    "tab-pane" + (additionalIndex == 1 ? " active" : "")
+                  }
+                  id="tabs-2"
+                  role="tabpanel"
+                >
                   <div className="product__details__tab__desc">
-                      <RatingList reviews={product.reviews} />
-                      <RatingForm />
+                    <RatingList />
+                    <RatingForm />
                   </div>
                 </div>
               </div>

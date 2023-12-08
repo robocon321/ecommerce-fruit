@@ -1,14 +1,10 @@
-import { ReviewProductResponse } from "@/types/response/ReviewProductResponse";
-import "./index.scss";
+import { useContext } from "react";
+import { DetailProductContext, DetailProductContextType } from "../../../_provider/DetailProductProvider";
 import RatingLine from "./RatingLine";
+import "./index.scss";
 
-type RatingListPropsType = {
-  reviews: ReviewProductResponse[];
-};
-
-export default function RatingList(props: RatingListPropsType) {
-  const { reviews } = props;
-  console.log(reviews);
+export default function RatingList(props: any) {
+  const { product: { reviews } } = useContext(DetailProductContext) as DetailProductContextType;
   return (
     <div className="user-ratings">
       {reviews.map((item) => (
