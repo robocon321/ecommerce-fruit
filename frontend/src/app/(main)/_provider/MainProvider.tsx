@@ -1,50 +1,55 @@
 "use client";
 
-import React, { createContext, useEffect, useState } from "react";
-import { MainContextType, StatusState } from "../_type/MainType";
-import CategoryResponse from "@/types/response/CategoryResponse";
-import { getCategories } from "@/services/CategoryService";
+import Loading from "@/components/Loading/Loading";
+import { loadUser } from "@/services/AuthService";
+import { UserDetailResponse } from "@/types/response/UserResponse";
+import { createContext, useCallback, useEffect, useState } from "react";
+import { toast } from "react-toastify";
+
+export type MainContextType = {
+  user: UserDetailResponse | undefined,
+  isLoading: boolean
+};
 
 export const MainContext = createContext<MainContextType | null>(null);
 
-const defaultStatus = {
-  isLoading: false,
-  message: "",
-  error: "",
-};
-
 const MainProvider = (props: any) => {
-  const [status, setStatus] = useState<StatusState>(defaultStatus);
-  const [categories, setCategories] = useState<CategoryResponse[]>([]);
+  const [user, setUser] = useState<UserDetailResponse>();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setStatus({
-      ...status,
-      isLoading: true,
-    });
-    getCategories()
-      .then((response) => {
-        setStatus({
-            isLoading: false,
-            message: 'Successfully',
-            error: ''
-        });
-        setCategories(response);
-      })
-      .catch((error) => {
-        setStatus({
-            isLoading: false,
-            message: '',
-            error: error.message
-          });
-        });
+    loadData();
+  }, []);
+
+  const loadData = useCallback(async () => {
+    await loadUser()
+    .then(response => {
+      setUser(response);
+      setIsLoading(false);
+    })
+    .catch(error => {
+      toast.error(error.message, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      setIsLoading(false);
+    })
   }, []);
 
   const value = {
-    status,
-    setStatus,
-    categories,
+    user,
+    isLoading
   };
+
+  if(isLoading) {
+    return <Loading />
+  }
 
   return (
     <MainContext.Provider value={value}>{props.children}</MainContext.Provider>

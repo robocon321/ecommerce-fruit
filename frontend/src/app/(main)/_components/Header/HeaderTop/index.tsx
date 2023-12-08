@@ -1,4 +1,13 @@
+"use client";
+
+import {
+  MainContext,
+  MainContextType,
+} from "@/app/(main)/_provider/MainProvider";
+import { useContext } from "react";
+
 export default function HeaderTop(props: any) {
+  const { user } = useContext(MainContext) as MainContextType;
   return (
     <div className="header__top">
       <div className="container">
@@ -43,9 +52,15 @@ export default function HeaderTop(props: any) {
                 </ul>
               </div>
               <div className="header__top__right__auth">
-                <a href="/login">
-                  <i className="fa fa-user"></i> Login
-                </a>
+                {user ? (
+                  <a href="#">
+                    <i className="fa fa-user"></i> {user.username}
+                  </a>
+                ) : (
+                  <a href="/login">
+                    <i className="fa fa-user"></i> Login
+                  </a>
+                )}
               </div>
             </div>
           </div>
