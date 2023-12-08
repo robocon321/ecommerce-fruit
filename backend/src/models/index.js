@@ -30,11 +30,13 @@ db.ReviewBlog = require('./ReviewBlog.js')(sequelize, DataTypes);
 db.User.belongsToMany(db.Role, {
     foreignKey: 'user_id',
     through: 'UserRole',
+    as: 'roles'
 });
 
 db.Role.belongsToMany(db.User, {
     foreignKey: 'role_id',
-    through: 'UserRole'
+    through: 'UserRole',
+    as: 'users'
 });
 
 db.User.hasMany(db.Product, {
