@@ -65,11 +65,13 @@ db.Product.hasMany(db.ReviewProduct, {
     as: 'reviews'
 });
 db.ReviewProduct.belongsTo(db.Product, {
-    foreignKey: 'product_id'
+    foreignKey: 'product_id',
+    as: 'product'
 });
 
 db.User.hasMany(db.ReviewProduct, {
-    foreignKey: 'user_id'
+    foreignKey: 'user_id',
+    as: 'reviews'
 });
 db.ReviewProduct.belongsTo(db.User, {
     foreignKey: 'user_id',
