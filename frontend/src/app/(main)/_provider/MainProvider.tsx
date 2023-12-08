@@ -3,12 +3,12 @@
 import Loading from "@/components/Loading/Loading";
 import { loadUser } from "@/services/AuthService";
 import { UserDetailResponse } from "@/types/response/UserResponse";
-import { createContext, useCallback, useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { Dispatch, SetStateAction, createContext, useCallback, useEffect, useState } from "react";
 
 export type MainContextType = {
   user: UserDetailResponse | undefined,
-  isLoading: boolean
+  isLoading: boolean,
+  setUser: Dispatch<SetStateAction<UserDetailResponse | undefined>>
 };
 
 export const MainContext = createContext<MainContextType | null>(null);
@@ -23,32 +23,22 @@ const MainProvider = (props: any) => {
 
   const loadData = useCallback(async () => {
     await loadUser()
-    .then(response => {
-      setUser(response);
-      setIsLoading(false);
-    })
-    .catch(error => {
-      toast.error(error.message, {
-        position: "bottom-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+      .then((response) => {
+        setUser(response);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
-      setIsLoading(false);
-    })
   }, []);
 
   const value = {
     user,
-    isLoading
+    isLoading,
+    setUser
   };
 
-  if(isLoading) {
-    return <Loading />
+  if (isLoading) {
+    return <Loading />;
   }
 
   return (

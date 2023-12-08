@@ -1,3 +1,5 @@
+import { ProductSummaryResponse } from "./ProductResponse"
+
 export type UserResponse = {
     id: number,
     username: string
@@ -9,5 +11,6 @@ export type UserDetailResponse = {
     roles: {
         id: number,
         role_name: string
-    }
+    },
+    products_wishlist: ProductSummaryResponse[]
 }
