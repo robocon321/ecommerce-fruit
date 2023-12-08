@@ -26,6 +26,7 @@ db.Category = require('./Category.js')(sequelize, DataTypes);
 db.ReviewProduct = require('./ReviewProduct.js')(sequelize, DataTypes);
 db.Blog = require('./Blog.js')(sequelize, DataTypes);
 db.ReviewBlog = require('./ReviewBlog.js')(sequelize, DataTypes);
+db.Wishlist = require('./Wishlist.js')(sequelize, DataTypes);
 
 db.User.belongsToMany(db.Role, {
     foreignKey: 'user_id',
@@ -113,6 +114,17 @@ db.ReviewBlog.belongsTo(db.User, {
     foreignKey: 'user_id'
 });
 
+
+db.User.belongsToMany(db.Product, {
+    foreignKey: 'user_id',
+    through: 'Wishlist',
+    as: 'products_wishlist'
+});
+db.Product.belongsToMany(db.User, {
+    foreignKey: 'product_id',
+    through: 'Wishlist',
+    as: 'users_wishlist'
+});
 
 db.sequelize.sync({ force: false })
 .then(() => {

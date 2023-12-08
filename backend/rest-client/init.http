@@ -206,3 +206,9 @@ GET http://localhost:8080/blog/generate
 
 ###
 GET http://localhost:8080/review-blog/generate
+
+###
+GET http://localhost:8080/wishlist/generate
+
+
+

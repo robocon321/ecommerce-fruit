@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const User = db.User;
 const Role = db.Role;
+const Product = db.Product;
 
 const register = async (req, res) => {
     const {
@@ -72,30 +73,30 @@ const login = async (req, res) => {
 };
 
 const loadUser = async (req, res) => {
-    const token = req.header('Authorization');
-    if (!token) return res.status(401).json({
-        message: 'Token not found'
+    const { user_id } = req;
+
+    const user = await User.findByPk(user_id, {
+        include: [{
+            model: Role,
+            through: 'UserRole',
+            as: 'roles',
+            attributes: ["id", "role_name"],
+            through: {
+                attributes: []
+            }
+        }, {
+            model: Product,
+            through: 'Wishlist',
+            as: 'products_wishlist',
+            attributes: ['id', 'name', 'images', 'real_price', 'sale_price', 'createdAt'],
+            through: {
+                attributes: []
+            }
+        }],
+        attributes: ["id", "username"]
     });
 
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
-        if (err) return res.status(403).json({
-            message: 'Invalid token'
-        });
-        const user = await User.findByPk(decoded.data, {
-            include: [{
-                model: Role,
-                through: 'UserRole',
-                as: 'roles',
-                attributes: ["id", "role_name"],
-                through: {
-                    attributes: []
-                }
-            }],
-            attributes: ["id", "username"]
-        });
-
-        return res.status(200).json(user);
-    });
+    return res.status(200).json(user);
 }
 
 module.exports = {
