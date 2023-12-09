@@ -21,6 +21,6 @@ content-type: application/json
 
 ###
 POST http://localhost:8080/loadUser
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDIwOTU2ODQsImlhdCI6MTcwMjA4ODQ4NH0.EiPpicKEQISQPXMeVf8L2zPXFmTbtpfcrU9eR4W-wJc
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDIxMDMyOTYsImlhdCI6MTcwMjA5NjA5Nn0.ouvXKiXcO-5b47y_Ay-E4c6PpiqK5cp2kRgO1R7SQ2g
 
 ### </Auth>

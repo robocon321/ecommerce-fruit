@@ -98,7 +98,8 @@ const loadUser = async (req, res) => {
             as: 'products_cart',
             attributes: ['id', 'name', 'images', 'real_price', 'sale_price', 'createdAt'],
             through: {
-                attributes: []
+                attributes: ["id", "quantity", "createdAt", "updatedAt"],
+                as: "cart_info"
             }
         }],
         attributes: ["id", "username"]
