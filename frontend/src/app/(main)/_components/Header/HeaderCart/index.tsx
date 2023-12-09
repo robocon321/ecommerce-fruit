@@ -4,10 +4,16 @@ import {
   MainContext,
   MainContextType,
 } from "@/app/(main)/_provider/MainProvider";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 
 export default function HeaderCart(props: any) {
   const { user } = useContext(MainContext) as MainContextType;
+  const sum = useMemo(() => {
+    return user?.products_cart.reduce(
+      (prev, current) => prev + current.sale_price,
+      0
+    );
+  }, [user]);
 
   return (
     <div className="header__cart">
@@ -15,7 +21,8 @@ export default function HeaderCart(props: any) {
         <li>
           {user ? (
             <a href="/wishlist">
-              <i className="fa fa-heart"></i> <span>{user.products_wishlist.length}</span>
+              <i className="fa fa-heart"></i>{" "}
+              <span>{user.products_wishlist.length}</span>
             </a>
           ) : (
             <a href="/login">
@@ -24,14 +31,23 @@ export default function HeaderCart(props: any) {
           )}
         </li>
         <li>
-          <a href="#">
-            <i className="fa fa-shopping-bag"></i> <span>3</span>
-          </a>
+          {user ? (
+            <a href="/cart">
+              <i className="fa fa-shopping-bag"></i>{" "}
+              <span>{user.products_cart.length}</span>
+            </a>
+          ) : (
+            <a href="/login">
+              <i className="fa fa-shopping-bag"></i> <span>0</span>
+            </a>
+          )}
         </li>
       </ul>
-      <div className="header__cart__price">
-        item: <span>$150.00</span>
-      </div>
+      {user && (
+        <div className="header__cart__price">
+          item: <span>${sum?.toFixed(2)}</span>
+        </div>
+      )}
     </div>
   );
 }

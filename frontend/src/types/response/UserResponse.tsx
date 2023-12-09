@@ -12,5 +12,6 @@ export type UserDetailResponse = {
         id: number,
         role_name: string
     },
-    products_wishlist: ProductSummaryResponse[]
+    products_wishlist: ProductSummaryResponse[],
+    products_cart: ProductSummaryResponse[]
 }
