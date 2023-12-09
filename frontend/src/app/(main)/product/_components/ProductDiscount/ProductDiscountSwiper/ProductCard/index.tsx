@@ -7,6 +7,7 @@ import { useCallback, useContext, useMemo } from "react";
 import { toast } from "react-toastify";
 import { ProductDiscountSummaryResponse } from "@/types/response/ProductResponse";
 import { removeCart, saveCart } from "@/services/CartService";
+import { CartSummaryResponse } from "@/types/response/CartResponse";
 
 export default function ProductCard(props: ProductDiscountSummaryResponse) {
   const { user, setUser } = useContext(MainContext) as MainContextType;
@@ -138,7 +139,10 @@ export default function ProductCard(props: ProductDiscountSummaryResponse) {
           .then((response) => {
             setUser({
               ...user,
-              products_cart: [...user.products_cart, props],
+              products_cart: [...user.products_cart, {
+                ...props,
+                cart_info: (response as CartSummaryResponse)
+              }],
             });
             toast.info("Add cart successfully", {
               position: "bottom-right",

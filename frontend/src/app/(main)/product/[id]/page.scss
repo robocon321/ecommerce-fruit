@@ -62,6 +62,7 @@
         padding: 16px 28px 14px;
         margin-right: 6px;
         margin-bottom: 5px;
+        border: none;
     }
 
     .heart-icon {
@@ -70,6 +71,12 @@
         color: $para-color;
         padding: 13px 16px 13px;
         background: $background;
+        cursor: pointer;
+    }
+
+    .heart-icon.active {
+        color: white;
+        background: #7fad39;
     }
 
     ul {

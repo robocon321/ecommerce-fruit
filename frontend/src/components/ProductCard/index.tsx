@@ -4,7 +4,9 @@ import {
 } from "@/app/(main)/_provider/MainProvider";
 import { removeCart, saveCart } from "@/services/CartService";
 import { removeWishlist, saveWishlist } from "@/services/WishlistService";
+import { CartSummaryResponse } from "@/types/response/CartResponse";
 import { ProductSummaryResponse } from "@/types/response/ProductResponse";
+import { errorToast, infoToast } from "@/utils/toast";
 import { useCallback, useContext, useMemo } from "react";
 import { toast } from "react-toastify";
 
@@ -31,28 +33,10 @@ export default function ProductCard(props: ProductSummaryResponse) {
                 (item) => item.id != props.id
               ),
             });
-            toast.info("Remove product from wishlist successfully", {
-              position: "bottom-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            });
+            infoToast("Remove product from wishlist successfully");
           })
           .catch((error) => {
-            toast.error(error.message, {
-              position: "bottom-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            });
+            errorToast(error.message);
           });
       } else {
         await saveWishlist(props.id)
@@ -61,41 +45,14 @@ export default function ProductCard(props: ProductSummaryResponse) {
               ...user,
               products_wishlist: [...user.products_wishlist, props],
             });
-            toast.info("Add wishlist successfully", {
-              position: "bottom-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            });
+            infoToast("Add wishlist successfully");
           })
           .catch((error) => {
-            toast.error(error.message, {
-              position: "bottom-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            });
+            errorToast(error.message);
           });
       }
     } else {
-      toast.error("You must login", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      errorToast("You must login");
     }
   }, [user]);
 
@@ -110,71 +67,29 @@ export default function ProductCard(props: ProductSummaryResponse) {
                 (item) => item.id != props.id
               ),
             });
-            toast.info("Remove product from cart successfully", {
-              position: "bottom-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            });
+            infoToast("Remove product from cart successfully");
           })
           .catch((error) => {
-            toast.error(error.message, {
-              position: "bottom-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            });
+            errorToast(error.message);
           });
       } else {
         await saveCart(props.id, 1)
           .then((response) => {
             setUser({
               ...user,
-              products_cart: [...user.products_cart, props],
+              products_cart: [...user.products_cart, {
+                ...props,
+                cart_info: (response as CartSummaryResponse)
+              }],
             });
-            toast.info("Add cart successfully", {
-              position: "bottom-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            });
+            infoToast("Add cart successfully");
           })
           .catch((error) => {
-            toast.error(error.message, {
-              position: "bottom-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            });
+            errorToast(error.message);
           });
       }
     } else {
-      toast.error("You must login", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      errorToast("You must login");
     }
   }, [user]);
 

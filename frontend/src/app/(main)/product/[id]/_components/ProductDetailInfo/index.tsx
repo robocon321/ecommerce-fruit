@@ -1,18 +1,24 @@
-import { ProductDetailResponse } from "@/types/response/ProductResponse";
-import ImageSlider from "./ImageSlider";
-import { Dispatch, SetStateAction, useContext, useMemo, useState } from "react";
-import RatingForm from "./RatingForm";
-import RatingList from "./RatingList";
+import { errorToast, infoToast } from "@/utils/toast";
+import { useCallback, useContext, useMemo, useState } from "react";
 import {
   DetailProductContext,
   DetailProductContextType,
 } from "../../_provider/DetailProductProvider";
+import ImageSlider from "./ImageSlider";
+import RatingForm from "./RatingForm";
+import RatingList from "./RatingList";
+import { MainContext, MainContextType } from "@/app/(main)/_provider/MainProvider";
+import { saveCart } from "@/services/CartService";
+import { removeWishlist, saveWishlist } from "@/services/WishlistService";
+import { CartSummaryResponse } from "@/types/response/CartResponse";
 
 export default function ProductDetailInfo(props: any) {
+  const { user, setUser } = useContext(MainContext) as MainContextType;
   const { product } = useContext(
     DetailProductContext
   ) as DetailProductContextType;
   const [additionalIndex, setAdditionalIndex] = useState(0);
+  const [cartCount, setCartCount] = useState(1);
 
   const averageRating = useMemo(() => {
     const sum = product.reviews
@@ -22,6 +28,82 @@ export default function ProductDetailInfo(props: any) {
       }, 0);
     return sum / product.reviews.length;
   }, [product.reviews]);
+
+  const isHeart = useMemo(() => {
+    return (
+      user && user.products_wishlist.map((item) => item.id).includes(product.id)
+    );
+  }, [user]);
+
+  const onClickHeartButton = useCallback(async () => {
+    if (user) {
+      if (isHeart) {
+        await removeWishlist(product.id)
+          .then((response) => {
+            setUser({
+              ...user,
+              products_wishlist: user.products_wishlist.filter(
+                (item) => item.id != product.id
+              ),
+            });
+            infoToast("Remove product from wishlist successfully");
+          })
+          .catch((error) => {
+            errorToast(error.message);
+          });
+      } else {
+        await saveWishlist(product.id)
+          .then((response) => {
+            setUser({
+              ...user,
+              products_wishlist: [...user.products_wishlist, product],
+            });
+            infoToast("Add wishlist successfully");
+          })
+          .catch((error) => {
+            errorToast(error.message);
+          });
+      }
+    } else {
+      errorToast("You must login");
+    }
+  }, [user]);
+
+  const onChangeCount = useCallback(
+    (count: number) => {
+      if (count > product.stock) {
+        errorToast("Count > Stock");
+        return ;
+      }
+      if(count <= 0) {
+        errorToast("Count <= 0");
+        return ;
+      }
+      setCartCount(count);
+    },
+    [cartCount]
+  );
+
+  const onAddToCart = useCallback(async () => {
+    if (user) {
+        await saveCart(product.id, cartCount)
+          .then((response) => {
+            setUser({
+              ...user,
+              products_cart: [...user.products_cart, {
+                ...product,
+                cart_info: (response as CartSummaryResponse)
+              }],
+            });
+            infoToast("Add cart successfully");
+          })
+          .catch((error) => {
+            errorToast(error.message);
+          });
+    } else {
+      errorToast("You must login");
+    }
+  }, [cartCount]);
 
   return (
     <section className="product-details spad">
@@ -56,17 +138,24 @@ export default function ProductDetailInfo(props: any) {
               <div className="product__details__quantity">
                 <div className="quantity">
                   <div className="pro-qty">
-                    <input type="text" value={product.stock} />
+                    <span className="dec qtybtn" onClick={() => onChangeCount(cartCount - 1)}>-</span>
+                    <input type="number" value={cartCount} onChange={(e) => onChangeCount(parseInt(e.currentTarget.value))} onBlur={(e) => {
+                      if(e.currentTarget.value == "") setCartCount(1);
+                    }} />
+                    <span className="inc qtybtn" onClick={() => onChangeCount(cartCount + 1)}>+</span>
                   </div>
                 </div>
               </div>
-              <a href="#" className="primary-btn">
+              <button onClick={() => onAddToCart()} className="primary-btn">
                 ADD TO CARD
-              </a>
-              <a href="#" className="heart-icon">
+              </button>
+              <span onClick={() => onClickHeartButton()} className={"heart-icon" + (isHeart ? " active" : " ")}>
                 <span className="icon_heart_alt"></span>
-              </a>
+              </span>
               <ul>
+                <li>
+                  <b>Stock</b> <span>{product.stock}</span>
+                </li>
                 <li>
                   <b>Availability</b> <span>In Stock</span>
                 </li>
