@@ -1,0 +1,18 @@
+###
+POST http://localhost:8080/cart
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDIwNjI2OTEsImlhdCI6MTcwMjA1NTQ5MX0.A7GX0OkXdk8Yzi2FnPDWBiRon1-iH_g5wFkWiMZYRg8
+
+{
+    "product_id": 1,
+    "quantity": 2
+}
+
+###
+DELETE http://localhost:8080/cart
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDIwNjI2OTEsImlhdCI6MTcwMjA1NTQ5MX0.A7GX0OkXdk8Yzi2FnPDWBiRon1-iH_g5wFkWiMZYRg8
+
+{
+    "product_id": 10
+}

@@ -92,6 +92,14 @@ const loadUser = async (req, res) => {
             through: {
                 attributes: []
             }
+        }, {
+            model: Product,
+            through: 'Cart',
+            as: 'products_cart',
+            attributes: ['id', 'name', 'images', 'real_price', 'sale_price', 'createdAt'],
+            through: {
+                attributes: []
+            }
         }],
         attributes: ["id", "username"]
     });
