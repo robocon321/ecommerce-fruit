@@ -4,11 +4,10 @@ import {
 } from "@/app/(main)/_provider/MainProvider";
 import { removeCart, saveCart } from "@/services/CartService";
 import { removeWishlist, saveWishlist } from "@/services/WishlistService";
-import { CartSummaryResponse } from "@/types/response/CartResponse";
+import { CartInfoResponse } from "@/types/response/CartResponse";
 import { ProductSummaryResponse } from "@/types/response/ProductResponse";
 import { errorToast, infoToast } from "@/utils/toast";
 import { useCallback, useContext, useMemo } from "react";
-import { toast } from "react-toastify";
 
 export default function ProductCard(props: ProductSummaryResponse) {
   const { user, setUser } = useContext(MainContext) as MainContextType;
@@ -79,7 +78,7 @@ export default function ProductCard(props: ProductSummaryResponse) {
               ...user,
               products_cart: [...user.products_cart, {
                 ...props,
-                cart_info: (response as CartSummaryResponse)
+                cart_info: (response as CartInfoResponse)
               }],
             });
             infoToast("Add cart successfully");

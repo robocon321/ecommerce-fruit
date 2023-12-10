@@ -6,6 +6,7 @@ export type ProductSummaryResponse = {
     name: string,
     real_price: number,
     sale_price: number,
+    stock: number,
     images: string[],
 }
 
