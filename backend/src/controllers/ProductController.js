@@ -309,7 +309,7 @@ const getProductById = async (req, res) => {
                 model: db.ReviewProduct,
                 attributes: ["id", "comment", "star", "createdAt", "updatedAt"],
                 duplicating: false,
-                as: 'reviews',                
+                as: 'reviews',
                 include: {
                     model: db.User,
                     duplicating: false,
@@ -337,6 +337,122 @@ const getProductById = async (req, res) => {
     }
 }
 
+const getProducts = async (req, res) => {
+    let productsAndCount;
+    let page = 1;
+    let size = 10;
+    let sortBy = [];
+    let sortType = [];
+    let sort = [];
+    let search = "";
+    let categoryIds = [];
+    let minPrice = 0;
+    let maxPrice = 1000000;
+
+    if (req.query.categories) {
+        categoryIds.push(...req.query.categories.split(','));
+    }
+
+    if (req.query.page) {
+        page = parseInt(req.query.page);
+    }
+
+    if (req.query.size) {
+        size = parseInt(req.query.size);
+    }
+
+    if (req.query.sortBy) {
+        sortBy.push(...req.query.sortBy.split(','));
+    }
+
+    if (req.query.sortType) {
+        sortType.push(...req.query.sortType.split(','));
+    }
+
+    if (sortBy.length == sortType.length) {
+        for (var i = 0; i < sortBy.length; i++) {
+            sort.push([sortBy[i], sortType[i]]);
+        }
+    }
+
+    if (req.query.search) {
+        search = req.query.search.trim()
+    }
+
+    if (req.query.range_price) {
+        try {
+            const range_price = req.query.range_price.split(',');
+            minPrice = parseInt(range_price[0]);
+            maxPrice = parseInt(range_price[1]);
+            if (minPrice > maxPrice) {
+                let tempt = minPrice;
+                minPrice = maxPrice;
+                maxPrice = tempt;
+            }
+        } catch (error) {
+            return res.status(401).json("Bad request");
+        }
+    }
+
+    const offset = (page - 1) * size;
+
+    try {
+        if (categoryIds.length == 0) {
+            productsAndCount = await db.Product.findAndCountAll({
+                attributes: ['id', 'name', 'images', 'real_price', 'sale_price', "stock", 'createdAt'],
+                include: [{
+                    model: db.Category,
+                    attributes: [],
+                    as: 'categories'
+                }, ],
+                where: {
+                    name: {
+                        [Op.like]: `%${search}%`
+                    },
+                    sale_price: {
+                        [Op.between]: [minPrice, maxPrice]
+                    }
+                },
+                limit: size,
+                offset,
+                order: sort
+            });
+        } else {
+            productsAndCount = await db.Product.findAndCountAll({
+                attributes: ['id', 'name', 'images', 'real_price', 'sale_price', "stock", 'createdAt'],
+                include: [{
+                    model: db.Category,
+                    attributes: [],
+                    where: {
+                        id: {
+                            [Op.in]: categoryIds,
+                        }
+                    },
+                    as: 'categories'
+                }, ],
+                where: {
+                    name: {
+                        [Op.like]: `%${search}%`
+                    },
+                    sale_price: {
+                        [Op.between]: [minPrice, maxPrice]
+                    }
+                },
+                limit: size,
+                offset,
+                order: sort
+            });
+        }
+        return res.status(200).json({
+            itemCount: productsAndCount.count,
+            products: productsAndCount.rows,
+            pageCount: Math.ceil(productsAndCount.count / size) 
+        });
+
+    } catch (error) {
+        return res.status(401).json(error.message);
+    }
+}
 
 module.exports = {
     generateProduct,
@@ -344,5 +460,6 @@ module.exports = {
     getProductByRatingCount,
     getProductByRatingAverage,
     getTopDiscountProduct,
-    getProductById
+    getProductById,
+    getProducts
 }

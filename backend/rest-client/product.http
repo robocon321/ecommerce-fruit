@@ -15,3 +15,6 @@ GET http://localhost:8080/product/getByDiscount
 
 ###
 GET http://localhost:8080/product/5
+
+###
+GET http://localhost:8080/product?range_price=20,100&search=a
