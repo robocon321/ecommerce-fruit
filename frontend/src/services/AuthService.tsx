@@ -58,7 +58,13 @@ export const loadUser = async () : Promise<UserDetailResponse> => {
         const status = response.status;        
         const data = await response.json();
 
-        if(status == 200) {            
+        if(status == 200) {
+            (data as UserDetailResponse).products_cart.forEach(item => {
+                item.images = item.images.toString().split(',')
+            });
+            (data as UserDetailResponse).products_wishlist.forEach(item => {
+                item.images = item.images.toString().split(',')
+            });
             return data;
         } else {
             throw new Error(data);

@@ -7,9 +7,19 @@ export type CartResponse = {
     updatedAt: Date
 }
 
-export type CartSummaryResponse = {
+export type CartInfoResponse = {
     id: number,
     quantity: number,
     createdAt: Date,
     updatedAt: Date
+}
+
+export type CartProductResponse = {
+    id: number,
+    name: string,
+    real_price: number,
+    sale_price: number,
+    images: string[],
+    stock: number,
+    cart_info: CartInfoResponse
 }

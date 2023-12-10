@@ -1,3 +1,4 @@
+import { CartRequest } from "@/types/request/CartRequest";
 import { CartResponse } from "@/types/response/CartResponse";
 
 export const saveCart = async (
@@ -42,6 +43,29 @@ export const removeCart = async (
     const status = response.status;
     const data = await response.text();
     if (status == 204) {
+      return data;
+    } else {
+      throw new Error(data);
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateMultiCart = async (carts: CartRequest[]): Promise<CartResponse> => {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await fetch(`${process.env.BACKEND_URL}/cart/multi`, {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+        Authorization: token + "",
+      },
+      body: JSON.stringify(carts)
+    });
+    const status = response.status;
+    const data = await response.json();
+    if (status == 200) {
       return data;
     } else {
       throw new Error(data);

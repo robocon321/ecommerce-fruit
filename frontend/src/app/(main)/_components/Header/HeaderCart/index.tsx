@@ -10,7 +10,7 @@ export default function HeaderCart(props: any) {
   const { user } = useContext(MainContext) as MainContextType;
   const sum = useMemo(() => {
     return user?.products_cart.reduce(
-      (prev, current) => prev + current.sale_price,
+      (prev, current) => prev + current.sale_price * current.cart_info.quantity,
       0
     );
   }, [user]);

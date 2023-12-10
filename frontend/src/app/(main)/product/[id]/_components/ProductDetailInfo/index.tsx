@@ -10,7 +10,7 @@ import RatingList from "./RatingList";
 import { MainContext, MainContextType } from "@/app/(main)/_provider/MainProvider";
 import { saveCart } from "@/services/CartService";
 import { removeWishlist, saveWishlist } from "@/services/WishlistService";
-import { CartSummaryResponse } from "@/types/response/CartResponse";
+import { CartInfoResponse } from "@/types/response/CartResponse";
 
 export default function ProductDetailInfo(props: any) {
   const { user, setUser } = useContext(MainContext) as MainContextType;
@@ -92,7 +92,7 @@ export default function ProductDetailInfo(props: any) {
               ...user,
               products_cart: [...user.products_cart, {
                 ...product,
-                cart_info: (response as CartSummaryResponse)
+                cart_info: (response as CartInfoResponse)
               }],
             });
             infoToast("Add cart successfully");

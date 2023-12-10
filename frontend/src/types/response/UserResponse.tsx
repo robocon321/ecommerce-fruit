@@ -1,4 +1,4 @@
-import { CartSummaryResponse } from "./CartResponse"
+import { CartProductResponse } from "./CartResponse"
 import { ProductSummaryResponse } from "./ProductResponse"
 
 export type UserResponse = {
@@ -14,12 +14,5 @@ export type UserDetailResponse = {
         role_name: string
     },
     products_wishlist: ProductSummaryResponse[],
-    products_cart: {
-        id: number,
-        name: string,
-        real_price: number,
-        sale_price: number,
-        images: string[],
-        cart_info: CartSummaryResponse
-    }[]
+    products_cart: CartProductResponse[]
 }
