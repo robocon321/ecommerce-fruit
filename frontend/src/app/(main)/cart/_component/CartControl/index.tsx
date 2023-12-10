@@ -3,6 +3,7 @@ import { useCallback, useContext, useMemo } from "react";
 import { CartContext, CartContextType } from "../../_provider/CartProvider";
 import { updateMultiCart } from "@/services/CartService";
 import { errorToast, infoToast } from "@/utils/toast";
+import { orderProduct } from "@/services/OrderService";
 
 export default function CartControl(props: any) {
   const { user, setUser } = useContext(MainContext) as MainContextType;
@@ -40,6 +41,25 @@ export default function CartControl(props: any) {
     }
   }, [user, carts]);
 
+  const onOrderProduct = useCallback(async () => {
+    if(user) {
+      setIsLoading(true);
+      await orderProduct(carts.map(item => ({
+        product_id: item.id,
+        quantity: item.cart_info.quantity
+      })))
+      .then(response => {
+        infoToast("Order Successfully!");
+      })
+      .catch(error => {
+        errorToast(error.message);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      })
+    }
+  }, [user]);
+
   return (
     <div className="row">
       <div className="col-lg-12">
@@ -76,9 +96,9 @@ export default function CartControl(props: any) {
               Total <span>${total}</span>
             </li>
           </ul>
-          <a href="#" className="primary-btn">
+          <div onClick={() => onOrderProduct()} className="primary-btn">
             PROCEED TO CHECKOUT
-          </a>
+          </div>
         </div>
       </div>
     </div>
