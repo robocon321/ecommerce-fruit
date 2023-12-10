@@ -1,0 +1,15 @@
+###
+POST http://localhost:8080/order
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDIxODY4OTcsImlhdCI6MTcwMjE3OTY5N30.sB6fGJFA2iBEIIUmyp4VE1_80UOU7NHyR0UelMNn0gA
+
+[{
+    "product_id": 5,
+    "quantity": 2
+}, {
+    "product_id": 2,
+    "quantity": 1    
+}, {
+    "product_id": 4,
+    "quantity": 1 
+}]

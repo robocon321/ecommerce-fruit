@@ -8,6 +8,7 @@ const blogRoute = require('./src/routes/BlogRoute')
 const reviewBlogRoute = require('./src/routes/ReviewBlogRoute')
 const wishlistRoute = require('./src/routes/WishlistRoute')
 const cartRoute = require('./src/routes/CartRoute')
+const orderRoute = require('./src/routes/OrderRoute')
 
 const express = require('express');
 const bodyParser = require('body-parser')
@@ -34,8 +35,9 @@ app.use("/blog", blogRoute);
 app.use("/review-blog", reviewBlogRoute);
 app.use("/wishlist", wishlistRoute);
 app.use("/cart", cartRoute);
+app.use("/order", orderRoute);
 
-app.get('/', (req, res) => {
+app.options('/', (req, res) => {
   res.send('Hello World!');
 });
 

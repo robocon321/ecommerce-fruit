@@ -28,6 +28,8 @@ db.Blog = require('./Blog.js')(sequelize, DataTypes);
 db.ReviewBlog = require('./ReviewBlog.js')(sequelize, DataTypes);
 db.Wishlist = require('./Wishlist.js')(sequelize, DataTypes);
 db.Cart = require('./Cart.js')(sequelize, DataTypes);
+db.Order = require('./Order.js')(sequelize, DataTypes);
+db.OrderDetail = require('./OrderDetail.js')(sequelize, DataTypes);
 
 db.User.belongsToMany(db.Role, {
     foreignKey: 'user_id',
@@ -138,6 +140,33 @@ db.Product.belongsToMany(db.User, {
     as: 'users_cart'
 });
 
+
+db.Order.belongsTo(db.User, {
+    foreignKey: 'user_id',
+    as: 'user'
+});
+db.User.hasMany(db.Order, {
+    foreignKey: 'user_id',
+    as: 'orders'
+});
+
+db.Order.hasMany(db.OrderDetail, {
+    foreignKey: 'order_id',
+    as: 'order'
+});
+db.OrderDetail.belongsTo(db.Order, {
+    foreignKey: 'order_id',
+    as: 'o_order_details'
+});
+
+db.Product.hasMany(db.OrderDetail, {
+    foreignKey: 'product_id',
+    as: 'product'
+});
+db.OrderDetail.belongsTo(db.Product, {
+    foreignKey: 'product_id',
+    as: 'p_order_details'
+});
 
 db.sequelize.sync({ force: false })
 .then(() => {

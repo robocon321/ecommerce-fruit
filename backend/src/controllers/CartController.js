@@ -140,7 +140,8 @@ const updateCarts = async (req, res) => {
             await db.Cart.destroy({
                 where: {
                     user_id
-                }
+                },
+                transaction: t
             });
 
             // insert new carts
@@ -149,7 +150,9 @@ const updateCarts = async (req, res) => {
                 user_id,
                 product_id: item.product_id,
                 quantity: item.quantity
-            })));
+            })), {
+                transaction: t
+            });
 
             await t.commit();
 
