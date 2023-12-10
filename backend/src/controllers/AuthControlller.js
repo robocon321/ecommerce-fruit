@@ -88,7 +88,7 @@ const loadUser = async (req, res) => {
             model: Product,
             through: 'Wishlist',
             as: 'products_wishlist',
-            attributes: ['id', 'name', 'images', 'real_price', 'sale_price', 'createdAt'],
+            attributes: ['id', 'name', 'images', 'real_price', 'sale_price', 'stock', 'createdAt'],
             through: {
                 attributes: []
             }
@@ -96,7 +96,7 @@ const loadUser = async (req, res) => {
             model: Product,
             through: 'Cart',
             as: 'products_cart',
-            attributes: ['id', 'name', 'images', 'real_price', 'sale_price', 'createdAt'],
+            attributes: ['id', 'name', 'images', 'real_price', 'sale_price', 'stock', 'createdAt'],
             through: {
                 attributes: ["id", "quantity", "createdAt", "updatedAt"],
                 as: "cart_info"

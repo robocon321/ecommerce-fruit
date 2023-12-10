@@ -37,7 +37,7 @@ const saveCart = async (req, res) => {
             }
         });
 
-        if(quantity == undefined || quantity <= 0) {
+        if (quantity == undefined || quantity <= 0) {
             return res.status(400).json("Quantity not null and more than 0");
         }
 
@@ -105,8 +105,66 @@ const removeCart = async (req, res) => {
     }
 }
 
+const updateCarts = async (req, res) => {
+    const carts = req.body;
+    const {
+        user_id
+    } = req;
+
+    await db.sequelize.transaction({
+        autocommit: false
+    }).
+    then(async (t) => {
+        try {
+            // check carts
+            for (var i = 0; i < carts.length; i++) {
+                const {
+                    product_id,
+                    quantity
+                } = carts[i];
+
+                if (quantity == undefined || quantity <= 0) {
+                    return res.status(400).json("Quantity not null and more than 0");
+                }
+
+                const product = await db.Product.findByPk(product_id, {
+                    attributes: ["stock"]
+                });
+
+                if (product.stock < quantity) {
+                    return res.status(400).json("Stock < Quantity");
+                }
+            }
+
+            // remove old carts
+            await db.Cart.destroy({
+                where: {
+                    user_id
+                }
+            });
+
+            // insert new carts
+
+            const newCarts = await db.Cart.bulkCreate(carts.map(item => ({
+                user_id,
+                product_id: item.product_id,
+                quantity: item.quantity
+            })));
+
+            await t.commit();
+
+            return res.status(200).json(newCarts);
+        } catch (error) {
+            await t.rollback();
+            return res.status(500).json(error.message);
+        }
+    });
+
+}
+
 module.exports = {
     generateCart,
     saveCart,
-    removeCart
+    removeCart,
+    updateCarts
 }
