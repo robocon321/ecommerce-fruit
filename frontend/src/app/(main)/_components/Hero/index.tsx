@@ -1,10 +1,16 @@
+"use client";
+
 import CategoryResponse from "@/types/response/CategoryResponse";
+import { getQueryProduct } from "@/utils/query-path";
+import { useSearchParams } from "next/navigation";
 
 type HeroPropsType = {
   categories: CategoryResponse[]
 }
 
 const Hero: React.FC<HeroPropsType> = (props) => {
+  const searchParams = useSearchParams();
+
   return (
     <section className="hero hero-normal">
       <div className="container">
@@ -27,8 +33,8 @@ const Hero: React.FC<HeroPropsType> = (props) => {
           <div className="col-lg-9">
             <div className="hero__search">
               <div className="hero__search__form">
-                <form action="#">
-                  <input type="text" placeholder="What do yo u need?" />
+                <form action={"/product"}>
+                  <input type="text" name="search" placeholder="What do yo u need?" />
                   <button type="submit" className="site-btn">
                     SEARCH
                   </button>

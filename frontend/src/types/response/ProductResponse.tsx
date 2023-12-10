@@ -36,3 +36,9 @@ export type ProductDetailResponse = {
     categories: CategoryResponse[]
 
 }
+
+export type ProductPageResponse = {
+    itemCount: number,
+    products: ProductSummaryResponse[],
+    pageCount: number
+}

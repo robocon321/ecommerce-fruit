@@ -6,6 +6,7 @@ import "@/static/css/nice-select.css";
 import "@/static/css/slicknav.min.css";
 import "@/static/css/style.css";
 import "./main.scss";
+import 'rsuite/dist/rsuite.min.css';
 import { cacheCategories } from "@/utils/category-cache";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";

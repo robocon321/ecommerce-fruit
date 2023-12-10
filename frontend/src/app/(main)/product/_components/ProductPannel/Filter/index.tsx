@@ -1,20 +1,81 @@
-export default function Filter(props: any) {
+import { getQueryProduct } from "@/utils/query-path";
+import { useRouter, useSearchParams } from "next/navigation";
+
+type FilterPropsType = {
+  itemCount: number
+}
+
+export default function Filter(props: FilterPropsType) {
+  const { itemCount } = props;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const onSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    router.push(e.currentTarget.value);
+  };
+
   return (
     <div className="filter__item">
       <div className="row">
         <div className="col-lg-4 col-md-5">
           <div className="filter__sort">
             <span>Sort By</span>
-            <select>
-              <option value="0">Default</option>
-              <option value="0">Default</option>
+            <select onChange={onSort}>
+              <option
+                value={
+                  "/product?" +
+                  new URLSearchParams({
+                    ...getQueryProduct(searchParams),
+                    sortBy: ["sale_price"],
+                    sortType: ["DESC"],
+                  })
+                }
+              >
+                Highest price
+              </option>
+              <option
+                value={
+                  "/product?" +
+                  new URLSearchParams({
+                    ...getQueryProduct(searchParams),
+                    sortBy: ["sale_price"],
+                    sortType: ["ASC"],
+                  })
+                }
+              >
+                Lowest price
+              </option>
+              <option
+                value={
+                  "/product?" +
+                  new URLSearchParams({
+                    ...getQueryProduct(searchParams),
+                    sortBy: ["createdAt"],
+                    sortType: ["DESC"],
+                  })
+                }
+              >
+                Latest
+              </option>
+              <option
+                value={
+                  "/product?" +
+                  new URLSearchParams({
+                    ...getQueryProduct(searchParams),
+                    sortBy: ["createdAt"],
+                    sortType: ["ASC"],
+                  })
+                }
+              >
+                Newest
+              </option>
             </select>
           </div>
         </div>
         <div className="col-lg-4 col-md-4">
           <div className="filter__found">
             <h6>
-              <span>16</span> Products found
+              <span>{itemCount}</span> Products found
             </h6>
           </div>
         </div>
