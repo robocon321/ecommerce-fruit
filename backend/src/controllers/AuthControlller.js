@@ -1,3 +1,4 @@
+const config = require('../config/sequelize.config');
 const db = require('../models')
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -62,7 +63,7 @@ const login = async (req, res) => {
                 data: user.id,
                 exp: Math.floor(Date.now() / 1000) + (60 * 60 * 2),
             },
-            process.env.JWT_SECRET, {
+            config.app.jwt_secret, {
                 algorithm: 'HS256'
             }
         );

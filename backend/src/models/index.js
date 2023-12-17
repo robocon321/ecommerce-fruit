@@ -1,17 +1,21 @@
-const {Sequelize, DataTypes} = require('sequelize');
-require('dotenv').config();
+const {
+    Sequelize,
+    DataTypes
+} = require('sequelize');
+const config = require('../config/sequelize.config.js');
 
-const sequelize = new Sequelize(process.env.DB_DATABASE, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    dialect: 'mysql'
+const sequelize = new Sequelize(config.db.database, config.db.username, config.db.password, {
+    host: config.db.host,
+    port: config.db.port,
+    dialect: config.db.type,
+    logging: false
 });
 
 sequelize.authenticate().then(() => {
     console.log('Connection has been established successfully.');
 }).catch((error) => {
     console.error('Unable to connect to the database: ', error);
-});    
+});
 
 const db = {}
 
@@ -169,9 +173,12 @@ db.OrderDetail.belongsTo(db.Product, {
     as: 'p_order_details'
 });
 
-db.sequelize.sync({ force: false })
-.then(() => {
-    console.log('yes re-sync done!')
-})
+db.sequelize.sync({
+        force: false
+    })
+    .then(() => {
+        console.log('yes re-sync done!')
+    })
+
 
 module.exports = db

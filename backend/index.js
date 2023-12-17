@@ -1,3 +1,5 @@
+const config = require('./src/config/sequelize.config')
+
 const authRoute = require('./src/routes/AuthRoute')
 const userRoute = require('./src/routes/UserRoute')
 const roleRoute = require('./src/routes/RoleRoute')
@@ -13,15 +15,23 @@ const codeRoute = require('./src/routes/CodeRoute')
 
 const express = require('express');
 const bodyParser = require('body-parser')
-var cors = require('cors')
-var morgan = require('morgan')
+var cors = require('cors');
 
+// log each request send to backend
+var morgan = require('morgan');
+
+// hide backend technology at header fields
+var helmet = require('helmet');
+
+// compress response from backend to frontend
+var compression = require('compression');
 
 const app = express()
-const port = 8080
 
-app.use(morgan('combined'))
-app.use(cors())
+app.use(morgan('combined'));
+app.use(cors());
+app.use(helmet());
+app.use(compression());
 app.use(bodyParser.json()) // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-data
 app.use(express.static('public'))
@@ -43,6 +53,6 @@ app.options('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+app.listen(config.app.port, () => {
+  console.log(`Example app listening on port ${config.app.port}`)
 });
