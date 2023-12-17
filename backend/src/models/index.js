@@ -30,6 +30,7 @@ db.Wishlist = require('./Wishlist.js')(sequelize, DataTypes);
 db.Cart = require('./Cart.js')(sequelize, DataTypes);
 db.Order = require('./Order.js')(sequelize, DataTypes);
 db.OrderDetail = require('./OrderDetail.js')(sequelize, DataTypes);
+db.Code = require('./Code.js')(sequelize, DataTypes);
 
 db.User.belongsToMany(db.Role, {
     foreignKey: 'user_id',
