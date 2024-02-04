@@ -1,4 +1,5 @@
-const config = require('./src/config/sequelize.config')
+const sequelizeConfig = require('./src/config/sequelize.config')
+const redisClient = require('./src/connect/redis.connect');
 
 const authRoute = require('./src/routes/AuthRoute')
 const userRoute = require('./src/routes/UserRoute')
@@ -64,6 +65,11 @@ app.use((error, req, res, next) => {
   return res.status(statusCode).json(error.message);
 });
 
-app.listen(config.app.port, () => {
-  console.log(`Example app listening on port ${config.app.port}`)
+const server = app.listen(sequelizeConfig.app.port, () => {
+  console.log(`Example app listening on port ${sequelizeConfig.app.port}`)
+});
+
+server.on('close', () => {
+  redisConfig.quit();
+  console.log(`Server ${server.port} is fully closed, no longer accepting connections`);
 });
