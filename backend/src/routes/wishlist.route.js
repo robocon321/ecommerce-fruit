@@ -1,8 +1,8 @@
 const express = require('express');
 const {
     generateWishlist, saveWishlist, removeWishlist
-} = require('../controllers/WishlistController');
-const authenticateToken = require('../middlewares/AuthMiddleware');
+} = require('../controllers/wishlist.controller');
+const authenticateToken = require('../middlewares/auth.middleware');
 const router = express.Router()
 
 router.get('/generate', (req, res) => generateWishlist(req, res));

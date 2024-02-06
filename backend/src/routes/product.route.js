@@ -1,4 +1,12 @@
-const { generateProduct, getProductByCategories, getProductByRatingCount, getProductByRatingAverage, getTopDiscountProduct, getProductById, getProducts } = require('../controllers/ProductController');
+const {
+    generateProduct,
+    getProductByCategories,
+    getProductByRatingCount,
+    getProductByRatingAverage,
+    getTopDiscountProduct,
+    getProductById,
+    getProducts
+} = require('../controllers/product.controller');
 const express = require('express');
 const router = express.Router()
 

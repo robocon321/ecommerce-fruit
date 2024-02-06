@@ -1,4 +1,4 @@
-const { generateBlog, getBlogByCategories } = require('../controllers/BlogController');
+const { generateBlog, getBlogByCategories } = require('../controllers/blog.controller');
 const express = require('express');
 const router = express.Router()
 

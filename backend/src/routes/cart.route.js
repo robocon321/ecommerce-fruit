@@ -1,8 +1,8 @@
 const express = require('express');
 const {
     generateCart, saveCart, removeCart, updateCarts
-} = require('../controllers/CartController');
-const authenticateToken = require('../middlewares/AuthMiddleware');
+} = require('../controllers/cart.controller');
+const authenticateToken = require('../middlewares/auth.middleware');
 const router = express.Router()
 
 router.get('/generate', (req, res) => generateCart(req, res));
