@@ -87,13 +87,15 @@ db.Blog.belongsTo(db.User, {
 db.Blog.belongsToMany(db.Category, {
     foreignKey: 'blog_id',
     through: 'BlogCategories',
-    timestamps: false
+    timestamps: false,
+    as: 'categories'
 });
 
 db.Category.belongsToMany(db.Blog, {
     foreignKey: 'category_id',
     through: 'BlogCategories',
-    timestamps: false
+    timestamps: false,
+    as: 'blogs'
 });
 
 db.Blog.hasMany(db.ReviewBlog, {
@@ -109,7 +111,6 @@ db.User.hasMany(db.ReviewBlog, {
 db.ReviewBlog.belongsTo(db.User, {
     foreignKey: 'user_id'
 });
-
 
 db.User.belongsToMany(db.Product, {
     foreignKey: 'user_id',

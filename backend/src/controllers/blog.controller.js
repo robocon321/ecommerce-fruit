@@ -1,8 +1,4 @@
 const {
-    Op
-} = require("sequelize");
-const db = require("../models");
-const {
     faker
 } = require('@faker-js/faker');
 const {
@@ -10,10 +6,9 @@ const {
     generateUserId,
     generateLongDescription
 } = require("../utils/generateData");
-require('dotenv').config();
+const { getBlogByCategoriesService, generateBlogService } = require("../services/blog.service");
 
 const getBlogByCategories = async (req, res) => {
-    let blogsWithCategories;
     let page = 1;
     let size = 10;
     let sortBy = [];
@@ -49,73 +44,14 @@ const getBlogByCategories = async (req, res) => {
 
     const offset = (page - 1) * size;
 
-    try {
-        if (categoryIds.length == 0) {
-            blogsWithCategories = await db.Blog.findAll({
-                attributes: [
-                    'id',
-                    'name',
-                    'image',
-                    'short_description',
-                    'updatedAt',
-                    [db.sequelize.fn('COUNT', db.sequelize.col('ReviewBlogs.id')), 'review_count'],
-                ],
-                include: [{
-                    model: db.ReviewBlog,
-                    as: 'ReviewBlogs',
-                    attributes: [],
-                    duplicating: false,
-                }, {
-                    model: db.Category,
-                    attributes: [],
-                    duplicating: false,
-                }],
-                limit: size,
-                offset,
-                group: ['Blog.id'], 
-                order: sort
-            });
-        } else {
-            blogsWithCategories = await db.Blog.findAll({
-                attributes: [
-                    'id',
-                    'name',
-                    'image',
-                    'short_description',
-                    'updatedAt',
-                    [db.sequelize.fn('COUNT', db.sequelize.col('ReviewBlogs.id')), 'review_count'],
-                ],
-                include: [{
-                    model: db.ReviewBlog,
-                    as: 'ReviewBlogs',
-                    attributes: [],
-                    duplicating: false,
-                }, {
-                    model: db.Category,
-                    attributes: [],
-                    where: {
-                        id: {
-                            [Op.in]: categoryIds,
-                        },
-                    },
-                    duplicating: false,
-                }],
-                limit: size,
-                offset,
-                order: sort
-            });
-        }
-        return res.status(200).json(blogsWithCategories);
-
-    } catch (error) {
-        return res.status(401).json(error.message);
-    }
+    const response = await getBlogByCategoriesService(categoryIds, offset, size, sort);
+    return res.status(response.status).json(response.data);
 }
 
 
 const generateBlog = async (req, res) => {
-    const name = faker.commerce.blogName();
-    const short_description = faker.commerce.blogDescription();
+    const name = faker.commerce.productName();
+    const short_description = faker.commerce.productDescription();
     const image = faker.image.urlLoremFlickr({
         category: 'food'
     });
@@ -135,17 +71,8 @@ const generateBlog = async (req, res) => {
         image
     }
 
-    try {
-        const userOwner = await db.User.findByPk(userId);
-        const newBlog = await db.Blog.create(data);
-        await newBlog.addCategories(categories);
-        await newBlog.setUser(userOwner);
-
-        return res.status(201).json(newBlog);
-    } catch (e) {
-        return res.status(401).json(e.message);
-
-    }
+    const response = await generateBlogService(userId, data, categories);
+    res.status(response.status).json(response.data);
 }
 
 module.exports = {

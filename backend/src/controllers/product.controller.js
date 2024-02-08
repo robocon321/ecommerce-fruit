@@ -1,6 +1,3 @@
-const {
-    Op
-} = require("sequelize");
 const db = require("../models");
 const {
     faker
@@ -8,19 +5,27 @@ const {
 const {
     generateLongDescription,
     generateCategories,
-    generateUserId
+    generateUserId,
+    generateArrayImage
 } = require("../utils/generateData");
-require('dotenv').config();
+const {
+    getProductByCategoriesService,
+    getProductByRatingCountService,
+    getProductByRatingAverageService,
+    getTopDiscountProductService,
+    generateProductService,
+    getProductByIdService,
+    getProductsService
+} = require("../services/product.service");
 
 const getProductByCategories = async (req, res) => {
-    let productsWithCategories;
     let page = 1;
     let size = 10;
     let sortBy = [];
     let sortType = [];
     let sort = [];
-
     const categoryIds = [];
+
     if (req.query.categories) {
         categoryIds.push(...req.query.categories.split(','));
     }
@@ -48,43 +53,8 @@ const getProductByCategories = async (req, res) => {
     }
 
     const offset = (page - 1) * size;
-
-    try {
-        if (categoryIds.length == 0) {
-            productsWithCategories = await db.Product.findAll({
-                attributes: ['id', 'name', 'images', 'real_price', 'sale_price', 'createdAt'],
-                include: [{
-                    model: db.Category,
-                    attributes: [],
-                    as: 'categories'
-                }, ],
-                limit: size,
-                offset,
-                order: sort
-            });
-        } else {
-            productsWithCategories = await db.Product.findAll({
-                attributes: ['id', 'name', 'images', 'real_price', 'sale_price', 'createdAt'],
-                include: [{
-                    model: db.Category,
-                    attributes: [],
-                    where: {
-                        id: {
-                            [Op.in]: categoryIds,
-                        },
-                    },
-                    as: 'categories'
-                }, ],
-                limit: size,
-                offset,
-                order: sort
-            });
-        }
-        return res.status(200).json(productsWithCategories);
-
-    } catch (error) {
-        return res.status(401).json(error.message);
-    }
+    const response = await getProductByCategoriesService(categoryIds, offset, size, sort);
+    res.status(response.status).json(response.data);
 }
 
 const getProductByRatingCount = async (req, res) => {
@@ -104,33 +74,8 @@ const getProductByRatingCount = async (req, res) => {
         [db.sequelize.literal('review_count'), 'DESC']
     ];
 
-    try {
-        products = await db.Product.findAll({
-            attributes: [
-                'id',
-                'name',
-                'images',
-                'real_price',
-                'sale_price',
-                'createdAt',
-                [db.sequelize.fn('COUNT', db.sequelize.col('reviews.id')), 'review_count'],
-            ],
-            include: {
-                model: db.ReviewProduct,
-                as: 'reviews',
-                attributes: [],
-                duplicating: false,
-            },
-            group: ['Product.id'],
-            order,
-            limit: size,
-            offset,
-        });
-        return res.status(200).json(products);
-
-    } catch (error) {
-        return res.status(401).json(error.message);
-    }
+    const response = await getProductByRatingCountService(offset, size, order);
+    res.status(response.status).json(response.data);
 }
 
 const getProductByRatingAverage = async (req, res) => {
@@ -150,33 +95,8 @@ const getProductByRatingAverage = async (req, res) => {
         [db.sequelize.literal('rating_avg'), 'DESC']
     ];
 
-    try {
-        products = await db.Product.findAll({
-            attributes: [
-                'id',
-                'name',
-                'images',
-                'real_price',
-                'sale_price',
-                'createdAt',
-                [db.sequelize.fn('AVG', db.sequelize.col('reviews.star')), 'rating_avg'],
-            ],
-            include: {
-                model: db.ReviewProduct,
-                as: 'reviews',
-                attributes: [],
-                duplicating: false,
-            },
-            group: ['Product.id'],
-            order,
-            limit: size,
-            offset,
-        });
-        return res.status(200).json(products);
-
-    } catch (error) {
-        return res.status(401).json(error.message);
-    }
+    const response = await getProductByRatingAverageService(offset, size, order);
+    res.status(response.status).json(response.data);
 }
 
 const getTopDiscountProduct = async (req, res) => {
@@ -198,30 +118,8 @@ const getTopDiscountProduct = async (req, res) => {
         ]
     ];
 
-    try {
-        products = await db.Product.findAll({
-            attributes: [
-                'id',
-                'name',
-                'images',
-                'real_price',
-                'sale_price',
-                'createdAt',
-                [
-                    db.sequelize.literal('((real_price - sale_price) * 100 / real_price) '),
-                    'discount'
-                ]
-            ],
-            order,
-            limit: size,
-            offset,
-        });
-        return res.status(200).json(products);
-
-    } catch (error) {
-        return res.status(401).json(error.message);
-    }
-
+    const response = await getTopDiscountProductService(offset, size, order);
+    res.status(response.status).json(response.data);
 }
 
 const generateProduct = async (req, res) => {
@@ -267,78 +165,21 @@ const generateProduct = async (req, res) => {
         images
     }
 
-    try {
-        const userOwner = await db.User.findByPk(userId);
-        const newProduct = await db.Product.create(data);
-        await newProduct.addCategories(categories);
-        await newProduct.setUser(userOwner);
-
-        return res.status(201).json(newProduct);
-    } catch (e) {
-        return res.status(401).json(e.message);
-
-    }
-
+    const response = await generateProductService(userId, data, categories);
+    res.status(response.status).json(response.data);
 }
-
 
 const getProductById = async (req, res) => {
     if (req.params.id) {
         const id = req.params.id;
-        const product = await db.Product.findByPk(id, {
-            attributes: [
-                "id",
-                "name",
-                "short_description",
-                "long_description",
-                "real_price",
-                "sale_price",
-                "stock",
-                "weight",
-                "images",
-                "createdAt",
-                "updatedAt",
-                [
-                    db.sequelize.literal('((real_price - sale_price) * 100 / real_price) '),
-                    'discount'
-                ],
-                // [db.sequelize.fn('AVG', db.sequelize.col('reviews.star')), 'rating_avg'],
-                // [db.sequelize.fn('COUNT', db.sequelize.col('reviews.id')), 'rating_count']
-            ],
-            include: [{
-                model: db.ReviewProduct,
-                attributes: ["id", "comment", "star", "createdAt", "updatedAt"],
-                duplicating: false,
-                as: 'reviews',
-                include: {
-                    model: db.User,
-                    duplicating: false,
-                    attributes: ["id", "username"],
-                    as: 'user'
-                }
-            }, {
-                model: db.User,
-                duplicating: false,
-                attributes: ["id", "username"],
-                as: 'user'
-            }, {
-                model: db.Category,
-                duplicating: false,
-                attributes: ["id", "name"],
-                as: 'categories',
-                through: {
-                    attributes: [] // Exclude the attributes of the intermediate table (ProductCategory)
-                }
-            }]
-        });
-        return res.status(200).json(product);
+        const response = await getProductByIdService(id);
+        res.status(response.status).json(response.data);
     } else {
         return res.status(400).json('Not found');
     }
 }
 
 const getProducts = async (req, res) => {
-    let productsAndCount;
     let page = 1;
     let size = 10;
     let sortBy = [];
@@ -396,62 +237,9 @@ const getProducts = async (req, res) => {
 
     const offset = (page - 1) * size;
 
-    try {
-        if (categoryIds.length == 0) {
-            productsAndCount = await db.Product.findAndCountAll({
-                attributes: ['id', 'name', 'images', 'real_price', 'sale_price', "stock", 'createdAt'],
-                include: [{
-                    model: db.Category,
-                    attributes: [],
-                    as: 'categories'
-                }, ],
-                where: {
-                    name: {
-                        [Op.like]: `%${search}%`
-                    },
-                    sale_price: {
-                        [Op.between]: [minPrice, maxPrice]
-                    }
-                },
-                limit: size,
-                offset,
-                order: sort
-            });
-        } else {
-            productsAndCount = await db.Product.findAndCountAll({
-                attributes: ['id', 'name', 'images', 'real_price', 'sale_price', "stock", 'createdAt'],
-                include: [{
-                    model: db.Category,
-                    attributes: [],
-                    where: {
-                        id: {
-                            [Op.in]: categoryIds,
-                        }
-                    },
-                    as: 'categories'
-                }, ],
-                where: {
-                    name: {
-                        [Op.like]: `%${search}%`
-                    },
-                    sale_price: {
-                        [Op.between]: [minPrice, maxPrice]
-                    }
-                },
-                limit: size,
-                offset,
-                order: sort
-            });
-        }
-        return res.status(200).json({
-            itemCount: productsAndCount.count,
-            products: productsAndCount.rows,
-            pageCount: Math.ceil(productsAndCount.count / size) 
-        });
-
-    } catch (error) {
-        return res.status(401).json(error.message);
-    }
+    const response = await getProductsService(categoryIds, search, minPrice, maxPrice, offset, size, sort);
+    res.status(response.status).json(respons.data);
+    
 }
 
 module.exports = {

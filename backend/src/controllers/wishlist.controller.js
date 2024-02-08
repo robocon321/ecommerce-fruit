@@ -2,75 +2,41 @@ const {
     generateProductId,
     generateUserId
 } = require('../utils/generateData');
-const db = require('../models')
+const {
+    generateWishlistService,
+    saveWishlistService,
+    removeWishlistService
+} = require('../services/wishlist.service');
 
 const generateWishlist = async (req, res) => {
-    try {
-        const user_id = await generateUserId();
-        const product_id = await generateProductId();
-        const wishlist = await db.Wishlist.create({
-            user_id,
-            product_id
-        });
-        return res.status(201).json(wishlist);
-    } catch (error) {
-        return res.status(500).json(error.message);
-    }
+    const user_id = await generateUserId();
+    const product_id = await generateProductId();
+    const response = await generateWishlistService(user_id, product_id);
+    res.status(response.status).json(response.data);
 }
 
 const saveWishlist = async (req, res) => {
-    try {
-        const {
-            user_id,
-            body: {
-                product_id
-            }
-        } = req;
-
-        const countOldWishlist = await db.Wishlist.count({
-            where: {
-                product_id,
-                user_id
-            }
-        });
-
-        if (countOldWishlist > 0) {
-            return res.status(409).json("Already exists data");
-        } else {
-            const wishlist = await db.Wishlist.create({
-                user_id,
-                product_id
-            });
-
-            return res.status(201).json(wishlist);
+    const {
+        user_id,
+        body: {
+            product_id
         }
+    } = req;
 
-    } catch (error) {
-        return res.status(500).json(error.message);
-    }
+    const response = await saveWishlistService(user_id, product_id);
+    res.status(response.status).json(response.data);
 }
 
 const removeWishlist = async (req, res) => {
-    try {
-        const {
-            user_id,
-            body: {
-                product_id
-            }
-        } = req;
-
-        await db.Wishlist.destroy({
-            where: {
-                user_id,
-                product_id
-            }
-        });
-
-        return res.status(204).json("Deleted!");
-
-    } catch (error) {
-        return res.status(500).json(error.message);
-    }
+    const {
+        user_id,
+        body: {
+            product_id
+        }
+    } = req;
+    
+    const response = await removeWishlistService(user_id, product_id);
+    res.status(response.status).json(response.data);
 }
 
 module.exports = {
