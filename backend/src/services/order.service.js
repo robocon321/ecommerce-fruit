@@ -70,7 +70,7 @@ const orderProductService = async (user_id, carts) => {
             });
         } catch (e) {
             await t.rollback();
-            console.error(e.message);
+            console.error(e);
             return new Response(500, "Server have problem");
         }
     });

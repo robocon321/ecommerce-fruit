@@ -1,5 +1,5 @@
 const sequelizeConfig = require('./src/config/sequelize.config')
-const redisClient = require('./src/connect/redis.connect');
+const client = require('./src/connect/redis.connect');
 
 const authRoute = require('./src/routes/auth.route')
 const userRoute = require('./src/routes/user.route')
@@ -13,6 +13,10 @@ const wishlistRoute = require('./src/routes/wishlist.route')
 const cartRoute = require('./src/routes/cart.route')
 const orderRoute = require('./src/routes/order.route')
 const codeRoute = require('./src/routes/code.route')
+
+const {
+  loadUserFromDatabaseToCacheService
+} = require('./src/services/auth.service');
 
 const express = require('express');
 const bodyParser = require('body-parser')
@@ -34,7 +38,9 @@ app.use(cors());
 app.use(helmet());
 app.use(compression());
 app.use(bodyParser.json()) // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-data
+app.use(bodyParser.urlencoded({
+  extended: true
+})) // for parsing application/x-www-form-data
 app.use(express.static('public'))
 
 app.use("/", authRoute);
@@ -65,11 +71,24 @@ app.use((error, req, res, next) => {
   return res.status(statusCode).json(error.message);
 });
 
-const server = app.listen(sequelizeConfig.app.port, () => {
-  console.log(`Example app listening on port ${sequelizeConfig.app.port}`)
-});
 
-server.on('close', () => {
-  redisConfig.quit();
-  console.log(`Server ${server.port} is fully closed, no longer accepting connections`);
+const server = app.listen(sequelizeConfig.app.port, async () => {
+  // clear redis storage
+  try {
+    await client.flushAll('ASYNC');
+    console.log("Flush redis storage successfully!");
+  } catch(e) {
+    console.error("Flush redis storage failed", e);
+  }
+
+  // load database to cache
+  try {
+    await loadUserFromDatabaseToCacheService();
+  } catch (e) {
+    console.error("Load redis storage have problem", e);
+  }
+
+  console.log("Load redis storage successfully!");
+
+  console.log(`Example app listening on port ${sequelizeConfig.app.port}`)
 });
