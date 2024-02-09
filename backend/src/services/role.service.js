@@ -9,7 +9,7 @@ const addNewRoleService = async (role_name) => {
             });
             return new Response(200, newRole);
         } catch(e) {
-            console.error(e.message);
+            console.error(e);
             return new Response(401,"Role " + role_name + " already existed");
         }
 

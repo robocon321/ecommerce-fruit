@@ -1,12 +1,5 @@
 const Response = require('../dto/response.dto');
-const {
-    faker
-} = require('@faker-js/faker');
 const db = require('../models');
-const {
-    generateProductId,
-    generateUserId
-} = require('../utils/generateData');
 
 const saveReviewProductService = async (user_id, star, comment, product_id) => {
     const errors = [];
@@ -28,7 +21,7 @@ const saveReviewProductService = async (user_id, star, comment, product_id) => {
     });
 
     if (countOldReview > 0) {
-        return new Response(409, "Already exists data");
+        return new Response(409, "Already exists review");
     } else {
         try {
             const review = await db.ReviewProduct.create({
@@ -50,7 +43,7 @@ const saveReviewProductService = async (user_id, star, comment, product_id) => {
 
             return new Response(201, reviewWithUser);
         } catch (e) {
-            console.error(e.message);
+            console.error(e);
             return new Response(500, "Server have problem")
         }
     }
@@ -66,7 +59,7 @@ const generateReviewProductService = async (productId, userId, comment, star) =>
         })
         return new Response(200, review);
     } catch (e) {
-        console.error(e.message);
+        console.error(e);
         return new Response(500, "Server have problem");
     }
 }

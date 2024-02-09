@@ -27,7 +27,7 @@ const addNewUserService = async (username, password) => {
             
             return new Response(201, 'Create user successfully!');
         } catch (e) {
-            console.error(e.message);
+            console.error(e);
             return new Response(400, 'User already existed');
         }    
     } else {

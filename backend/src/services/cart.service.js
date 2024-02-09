@@ -79,8 +79,8 @@ const removeCartService = async (user_id, product_id) => {
         });
         return new Response(204, "Deleted!");
     } catch (e) {
-        console.error(e.message);
-        return new Response(500, e.message);
+        console.error(e);
+        return new Response(500, "Server have problem");
     }
 }
 
@@ -133,8 +133,8 @@ const updateCartsService = async (user_id, carts) => {
             return new Response(200, newCarts);
         } catch (e) {
             await t.rollback();
-            console.error(e.message);
-            return new Response(500, e.message);
+            console.error(e);
+            return new Response(500, "Server have problem");
         }
     });
 }

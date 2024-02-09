@@ -63,7 +63,7 @@ const getBlogByCategoriesService = async (categoryIds, offset, size, sort) => {
         }
         return new Response(200, blogsWithCategories);
     } catch (e) {
-        console.error(e.message);
+        console.error(e);
         return new Response(500, "Server have problem");
     }
 }
@@ -77,7 +77,7 @@ const generateBlogService = async (userId, data, categories) => {
 
         return new Response(201, newBlog);
     } catch (e) {
-        console.error(e.message);
+        console.error(e);
         return new Response(500, "Server have problem");
     }
 }

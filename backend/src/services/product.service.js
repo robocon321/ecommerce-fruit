@@ -39,7 +39,7 @@ const getProductByCategoriesService = async (categoryIds, offset, size, sort) =>
         return new Response(200, productsWithCategories);
 
     } catch (e) {
-        console.error(e.message);
+        console.error(e);
         return new Response(500, "Server have problem");
     }
 }
@@ -69,7 +69,7 @@ const getProductByRatingCountService = async (offset, size, order) => {
         });
         return new Response(200, products);
     } catch (e) {
-        console.error(e.message);
+        console.error(e);
         return new Response(500, "Server have problem");
     }
 }
@@ -99,6 +99,7 @@ const getProductByRatingAverageService = async (offset, size, order) => {
         });
         return new Response(200, products);
     } catch (e) {
+        console.error(e);
         return new Response(500, "Server have problem");
     }
 }
@@ -124,7 +125,7 @@ const getTopDiscountProductService = async (offset, size, order) => {
         });
         return new Response(200, products);
     } catch (e) {
-        console.error(e.message);
+        console.error(e);
         return new Response(500, "Server have problem");
     }
 
@@ -139,12 +140,11 @@ const generateProductService = async (userId, data, categories) => {
 
         return new Response(201, newProduct);
     } catch (e) {
-        console.error(e.message);
+        console.error(e);
         return new Response(500, "Server have problem");
     }
 
 }
-
 
 const getProductByIdService = async (id) => {
     const product = await db.Product.findByPk(id, {
@@ -253,10 +253,16 @@ const getProductsService = async (categoryIds, search, minPrice, maxPrice, offse
             pageCount: Math.ceil(productsAndCount.count / size) 
         });
     } catch (e) {
-        console.error(e.message);
+        console.error(e);
         return new Response(500, "Server have problem");
     }
 }
+
+// zScore for order type - price_products, newest_product, discount_products, rating_products
+// Hash for product info - product info
+// Set for product id - product#[id]
+
+
 
 module.exports = {
     generateProductService,

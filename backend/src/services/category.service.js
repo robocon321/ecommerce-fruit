@@ -32,8 +32,8 @@ const addNewCategoryService = async (name, image) => {
             }
 
         } catch (e) {
-            console.error(e.message);
-            return new Response(401, "Bad request");
+            console.error(e);
+            return new Response(500, "Server have problem");
         }
 
     } else {

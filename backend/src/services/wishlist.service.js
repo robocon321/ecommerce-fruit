@@ -9,7 +9,7 @@ const generateWishlistService = async (user_id, product_id) => {
         });
         return new Response(201, wishlist);
     } catch (e) {
-        console.error(e.message);
+        console.error(e);
         return res.status(500).json("Server have problem");
     }
 }
@@ -51,7 +51,7 @@ const removeWishlistService = async (user_id, product_id) => {
 
         return new Response(204, "Deleted!");
     } catch (e) {
-        console.error(e.message);
+        console.error(e);
         return new Response(500, "Server have problem");
     }
 }
