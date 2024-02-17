@@ -12,6 +12,7 @@ export const login = async (request: AuthRequest) : Promise<any> => {
         });
         const status = response.status;        
         const data = await response.json();
+        console.log(data);
 
         if(status == 200) {            
             return data;
@@ -57,7 +58,6 @@ export const loadUser = async () : Promise<UserDetailResponse> => {
         });
         const status = response.status;        
         const data = await response.json();
-
         if(status == 200) {
             (data as UserDetailResponse).products_cart.forEach(item => {
                 item.images = item.images.toString().split(',')

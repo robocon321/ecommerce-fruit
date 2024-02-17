@@ -6,7 +6,7 @@ export type ProductSummaryResponse = {
     name: string,
     real_price: number,
     sale_price: number,
-    stock: number,
+    stock:  number,
     images: string[],
 }
 
@@ -15,6 +15,7 @@ export type ProductDiscountSummaryResponse = {
     name: string,
     real_price: number,
     sale_price: number,
+    stock:  number,
     discount: number,
     images: string[],
 }

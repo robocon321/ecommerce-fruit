@@ -249,8 +249,6 @@ export const getProductsPage = async (
 
   query.range_price = range_price;
 
-  console.log(query);
-
   try {
     const response = await fetch(
       `${process.env.BACKEND_URL}/product?` +
@@ -262,8 +260,6 @@ export const getProductsPage = async (
 
     const status = response.status;
     const data = await response.json();
-
-    console.log(data);
 
     if (status == 200) {
       (data as ProductPageResponse).products.forEach((item) => {
