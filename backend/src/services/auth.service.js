@@ -78,6 +78,8 @@ const loginService = async (username, password) => {
     const exists = await client.sIsMember(usernamesUniqueSetKey(), username);
     if (exists) {
         const user_id = await client.zScore(usernamesScoreKey(), username);
+        const user = await client.hGetAll(usersHashKey(user_id));
+        if(user.password != password) return new Response(401, 'Invalid credentials');
         const token = jwt.sign({
                 data: user_id,
                 exp: Math.floor(Date.now() / 1000) + (60 * 60 * 2),
@@ -111,45 +113,35 @@ const loginService = async (username, password) => {
 }
 
 const loadUserService = async (user_id) => {
-    let user = await client.hGetAll(usersHashKey(user_id));
-    if (Object.keys(user).length !== 0) {        
-        return new Response(200, {
-            ...user,
-            roles: JSON.parse(user.roles),
-            products_wishlist: [],
-            products_cart: []
-        });
-    } else {
-        user = await User.findByPk(user_id, {
-            include: [{
-                model: Role,
-                through: 'UserRole',
-                as: 'roles',
-                attributes: ["id", "role_name"],
-                through: {
-                    attributes: []
-                }
-            }, {
-                model: Product,
-                through: 'Wishlist',
-                as: 'products_wishlist',
-                attributes: ['id', 'name', 'images', 'real_price', 'sale_price', 'stock', 'createdAt'],
-                through: {
-                    attributes: []
-                }
-            }, {
-                model: Product,
-                through: 'Cart',
-                as: 'products_cart',
-                attributes: ['id', 'name', 'images', 'real_price', 'sale_price', 'stock', 'createdAt'],
-                through: {
-                    attributes: ["id", "quantity", "createdAt", "updatedAt"],
-                    as: "cart_info"
-                }
-            }],
-            attributes: ["id", "username"]
-        });
-    }
+    const user = await User.findByPk(user_id, {
+        include: [{
+            model: Role,
+            through: 'UserRole',
+            as: 'roles',
+            attributes: ["id", "role_name"],
+            through: {
+                attributes: []
+            }
+        }, {
+            model: Product,
+            through: 'Wishlist',
+            as: 'products_wishlist',
+            attributes: ['id', 'name', 'images', 'real_price', 'sale_price', 'stock', 'createdAt'],
+            through: {
+                attributes: []
+            }
+        }, {
+            model: Product,
+            through: 'Cart',
+            as: 'products_cart',
+            attributes: ['id', 'name', 'images', 'real_price', 'sale_price', 'stock', 'createdAt'],
+            through: {
+                attributes: ["id", "quantity", "createdAt", "updatedAt"],
+                as: "cart_info"
+            }
+        }],
+        attributes: ["id", "username"]
+    });
 
     return new Response(200, user);
 }
@@ -166,12 +158,12 @@ const loadUserFromDatabaseToCacheService = async () => {
             }
         }
     });
-    
+
     await Promise.all(users.map(async (user) => {
         const currentUser = user.dataValues;
         const currentRoles = currentUser.roles.map(role => role.dataValues);
         delete currentUser.roles;
-    
+
         const userSetPromise = client.sAdd(usernamesUniqueSetKey(), currentUser.username);
         const userScorePromise = client.zAdd(usernamesScoreKey(), {
             value: currentUser.username,
@@ -181,9 +173,9 @@ const loadUserFromDatabaseToCacheService = async () => {
             ...currentUser,
             roles: JSON.stringify(currentRoles)
         });
-    
+
         await Promise.all([userSetPromise, userScorePromise, userHashPromise]);
-    }));    
+    }));
     // let currentUser = null;
     // let currentRoles = null;
 
