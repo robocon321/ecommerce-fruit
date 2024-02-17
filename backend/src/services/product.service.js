@@ -317,12 +317,17 @@ const loadProductDatabaseToCacheService = async () => {
         offset: 0,
     })).map(item => item.dataValues);
 
-    for (let i = 0; i < rating_count_products.length; i++) {
-        await client.zAdd(productByScoreKey("review_count"), {
-            value: rating_count_products[i].id + "",
-            score: rating_count_products[i].review_count
-        })
-    }
+    const ratingCountProductsPromise = rating_count_products.map(item => client.zAdd(productByScoreKey("review_count"), {
+        value: item.id + "",
+        score: item.review_count
+    }));
+
+    // for (let i = 0; i < rating_count_products.length; i++) {
+    //     await client.zAdd(productByScoreKey("review_count"), {
+    //         value: rating_count_products[i].id + "",
+    //         score: rating_count_products[i].review_count
+    //     })
+    // }
 
     products.push(...rating_count_products);
 
@@ -351,12 +356,17 @@ const loadProductDatabaseToCacheService = async () => {
         offset: 0,
     })).map(item => item.dataValues);
 
-    for (let i = 0; i < rating_avg_products.length; i++) {
-        await client.zAdd(productByScoreKey("review_avg"), {
-            value: rating_avg_products[i].id + "",
-            score: rating_avg_products[i].review_avg
-        })
-    }
+    const ratingAvgProductsPromise = rating_avg_products.map(item => client.zAdd(productByScoreKey("review_avg"), {
+        value: item.id + "",
+        score: item.review_avg
+    }));
+
+    // for (let i = 0; i < rating_avg_products.length; i++) {
+    //     await client.zAdd(productByScoreKey("review_avg"), {
+    //         value: rating_avg_products[i].id + "",
+    //         score: rating_avg_products[i].review_avg
+    //     })
+    // }
 
     products.push(...rating_avg_products);
 
@@ -386,12 +396,17 @@ const loadProductDatabaseToCacheService = async () => {
         offset: 0,
     })).map(item => item.dataValues);
 
-    for (let i = 0; i < price_desc_products.length; i++) {
-        await client.zAdd(productByScoreKey("price_desc"), {
-            value: price_desc_products[i].id + "",
-            score: price_desc_products[i].sale_price
-        })
-    }
+    const priceDescProductsPromise = price_desc_products.map(item => client.zAdd(productByScoreKey("price_desc"), {
+        value: item.id + "",
+        score: item.sale_price
+    }));
+
+    // for (let i = 0; i < price_desc_products.length; i++) {
+    //     await client.zAdd(productByScoreKey("price_desc"), {
+    //         value: price_desc_products[i].id + "",
+    //         score: price_desc_products[i].sale_price
+    //     })
+    // }
 
     products.push(...price_desc_products.filter(f => !products.some(s => s.id == f.id)));
 
@@ -420,12 +435,17 @@ const loadProductDatabaseToCacheService = async () => {
         offset: 0,
     })).map(item => item.dataValues);
 
-    for (let i = 0; i < price_asc_products.length; i++) {
-        await client.zAdd(productByScoreKey("price_asc"), {
-            value: price_asc_products[i].id + "",
-            score: price_asc_products[i].sale_price
-        })
-    }
+    const priceAscProductsPromise = price_asc_products.map(item => client.zAdd(productByScoreKey("price_asc"), {
+        value: item.id + "",
+        score: item.sale_price
+    }));
+
+    // for (let i = 0; i < price_asc_products.length; i++) {
+    //     await client.zAdd(productByScoreKey("price_asc"), {
+    //         value: price_asc_products[i].id + "",
+    //         score: price_asc_products[i].sale_price
+    //     })
+    // }
 
     products.push(...price_asc_products.filter(f => !products.some(s => s.id == f.id)));
 
@@ -454,12 +474,17 @@ const loadProductDatabaseToCacheService = async () => {
         offset: 0,
     })).map(item => item.dataValues);
 
-    for (let i = 0; i < newest_products.length; i++) {
-        await client.zAdd(productByScoreKey("newest"), {
-            value: newest_products[i].id + "",
-            score: (new Date(newest_products[i].createdAt)).getTime()
-        })
-    }
+    const newestProductsPromise = newest_products.map(item => client.zAdd(productByScoreKey("newest"), {
+        value: item.id + "",
+        score: (new Date(item.createdAt)).getTime()
+    }));
+
+    // for (let i = 0; i < newest_products.length; i++) {
+    //     await client.zAdd(productByScoreKey("newest"), {
+    //         value: newest_products[i].id + "",
+    //         score: (new Date(newest_products[i].createdAt)).getTime()
+    //     })
+    // }
 
     products.push(...newest_products.filter(f => !products.some(s => s.id == f.id)));
 
@@ -486,24 +511,48 @@ const loadProductDatabaseToCacheService = async () => {
         offset: 0,
     })).map(item => item.dataValues);
 
-    for (let i = 0; i < discount_products.length; i++) {
-        await client.zAdd(productByScoreKey("discount"), {
-            value: discount_products[i].id + "",
-            score: discount_products[i].discount
-        })
-    }
+    const discountProductsPromise = discount_products.map(item => client.zAdd(productByScoreKey("discount"), {
+        value: item.id + "",
+        score: item.discount
+    }));
+
+    // for (let i = 0; i < discount_products.length; i++) {
+    //     await client.zAdd(productByScoreKey("discount"), {
+    //         value: discount_products[i].id + "",
+    //         score: discount_products[i].discount
+    //     })
+    // }
 
     products.push(...discount_products.filter(f => !products.some(s => s.id == f.id)));
 
-    for (let i = 0; i < products.length; i++) {
-        await client.hSet(productHashKey(products[i].id), {
-            ...products[i],
-            createdAt: products[i].createdAt + ""
-        });
-        await client.sAdd(productSetKey(), products[i].id + "");
-    }
-}
+    const productsPromise = products.map(async (product) => {
+        await Promise.all([
+            client.hSet(productHashKey(product.id), {
+                ...product,
+                createdAt: product.createdAt + "",
+            }),
+            client.sAdd(productSetKey(), product.id + ""),
+        ]);
+    });
 
+    // for (let i = 0; i < products.length; i++) {
+    //     await client.hSet(productHashKey(products[i].id), {
+    //         ...products[i],
+    //         createdAt: products[i].createdAt + ""
+    //     });
+    //     await client.sAdd(productSetKey(), products[i].id + "");
+    // }
+
+    await Promise.all([
+        ratingCountProductsPromise,
+        ratingAvgProductsPromise, 
+        priceDescProductsPromise, 
+        priceAscProductsPromise, 
+        newestProductsPromise, 
+        discountProductsPromise, 
+        productsPromise
+    ]);
+}
 
 const deserializeProduct = (product) => {
     return {

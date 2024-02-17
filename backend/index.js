@@ -30,7 +30,9 @@ var helmet = require('helmet');
 
 // compress response from backend to frontend
 var compression = require('compression');
-const { loadProductDatabaseToCacheService } = require('./src/services/product.service');
+const {
+  loadProductDatabaseToCacheService
+} = require('./src/services/product.service');
 
 const app = express()
 
@@ -78,19 +80,29 @@ const server = app.listen(sequelizeConfig.app.port, async () => {
   try {
     await client.flushAll('ASYNC');
     console.log("Flush redis storage successfully!");
-  } catch(e) {
+  } catch (e) {
     console.error("Flush redis storage failed", e);
   }
 
   // load database to cache
   try {
-    await loadUserFromDatabaseToCacheService();
+    const start = performance.now();
+
+    const loadUserPromise = loadUserFromDatabaseToCacheService();
+    const loadProductPromise = loadProductDatabaseToCacheService();
+
+    await Promise.all([loadUserPromise, loadProductPromise]);
+
+    // await loadUserFromDatabaseToCacheService();
+    // await loadProductDatabaseToCacheService();
+
+    const end = performance.now();
+    console.log(end - start);  
   } catch (e) {
     console.error("Load redis storage have problem", e);
   }
 
   console.log("Load redis storage successfully!");
-    await loadProductDatabaseToCacheService();
 
   console.log(`Example app listening on port ${sequelizeConfig.app.port}`)
 });

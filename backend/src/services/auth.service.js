@@ -112,7 +112,7 @@ const loginService = async (username, password) => {
 
 const loadUserService = async (user_id) => {
     let user = await client.hGetAll(usersHashKey(user_id));
-    if (Object.keys(user).length !== 0) {
+    if (Object.keys(user).length !== 0) {        
         return new Response(200, {
             ...user,
             roles: JSON.parse(user.roles),
@@ -166,23 +166,44 @@ const loadUserFromDatabaseToCacheService = async () => {
             }
         }
     });
-    let currentUser = null;
-    let currentRoles = null;
-    for(let i = 0 ; i < users.length ; i ++) {
-        currentUser = users[i].dataValues;
-        currentRoles = currentUser.roles.map(role => role.dataValues);
+    
+    await Promise.all(users.map(async (user) => {
+        const currentUser = user.dataValues;
+        const currentRoles = currentUser.roles.map(role => role.dataValues);
         delete currentUser.roles;
-
-        await client.sAdd(usernamesUniqueSetKey(), currentUser.username);
-        await client.zAdd(usernamesScoreKey(), {
+    
+        const userSetPromise = client.sAdd(usernamesUniqueSetKey(), currentUser.username);
+        const userScorePromise = client.zAdd(usernamesScoreKey(), {
             value: currentUser.username,
             score: currentUser.id
         });
-        await client.hSet(usersHashKey(currentUser.id), {
+        const userHashPromise = client.hSet(usersHashKey(currentUser.id), {
             ...currentUser,
             roles: JSON.stringify(currentRoles)
         });
-    }
+    
+        await Promise.all([userSetPromise, userScorePromise, userHashPromise]);
+    }));    
+    // let currentUser = null;
+    // let currentRoles = null;
+
+    // for(let i = 0 ; i < users.length ; i ++) {
+    //     currentUser = users[i].dataValues;
+    //     currentRoles = currentUser.roles.map(role => role.dataValues);
+    //     delete currentUser.roles;
+
+    //     const userSetPromise = client.sAdd(usernamesUniqueSetKey(), currentUser.username);
+    //     const userScorePromise = client.zAdd(usernamesScoreKey(), {
+    //         value: currentUser.username,
+    //         score: currentUser.id
+    //     });
+    //     const userHashPromise = client.hSet(usersHashKey(currentUser.id), {
+    //         ...currentUser,
+    //         roles: JSON.stringify(currentRoles)
+    //     });
+
+    //     await Promise.all([userSetPromise, userScorePromise, userHashPromise]);
+    // }    
 }
 
 module.exports = {
