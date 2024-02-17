@@ -30,6 +30,7 @@ var helmet = require('helmet');
 
 // compress response from backend to frontend
 var compression = require('compression');
+const { loadProductDatabaseToCacheService } = require('./src/services/product.service');
 
 const app = express()
 
@@ -89,6 +90,7 @@ const server = app.listen(sequelizeConfig.app.port, async () => {
   }
 
   console.log("Load redis storage successfully!");
+    await loadProductDatabaseToCacheService();
 
   console.log(`Example app listening on port ${sequelizeConfig.app.port}`)
 });

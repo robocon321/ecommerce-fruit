@@ -238,7 +238,7 @@ const getProducts = async (req, res) => {
     const offset = (page - 1) * size;
 
     const response = await getProductsService(categoryIds, search, minPrice, maxPrice, offset, size, sort);
-    res.status(response.status).json(respons.data);
+    res.status(response.status).json(response.data);
     
 }
 

@@ -23,6 +23,7 @@ const getBlogByCategoriesService = async (categoryIds, offset, size, sort) => {
                     duplicating: false,
                 }, {
                     model: db.Category,
+                    as: 'categories',
                     attributes: [],
                     duplicating: false,
                 }],

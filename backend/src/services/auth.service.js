@@ -115,7 +115,9 @@ const loadUserService = async (user_id) => {
     if (Object.keys(user).length !== 0) {
         return new Response(200, {
             ...user,
-            roles: JSON.parse(user.roles)
+            roles: JSON.parse(user.roles),
+            products_wishlist: [],
+            products_cart: []
         });
     } else {
         user = await User.findByPk(user_id, {

@@ -3,6 +3,12 @@ const {
     Op
 } = require("sequelize");
 const db = require("../models");
+const {
+    productByScoreKey,
+    productHashKey,
+    productSetKey
+} = require('../utils/key.redis');
+const client = require('../connect/redis.connect');
 
 const getProductByCategoriesService = async (categoryIds, offset, size, sort) => {
     try {
@@ -46,89 +52,113 @@ const getProductByCategoriesService = async (categoryIds, offset, size, sort) =>
 
 const getProductByRatingCountService = async (offset, size, order) => {
     try {
-        products = await db.Product.findAll({
-            attributes: [
-                'id',
-                'name',
-                'images',
-                'real_price',
-                'sale_price',
-                'createdAt',
-                [db.sequelize.fn('COUNT', db.sequelize.col('reviews.id')), 'review_count'],
-            ],
-            include: {
-                model: db.ReviewProduct,
-                as: 'reviews',
-                attributes: [],
-                duplicating: false,
-            },
-            group: ['Product.id'],
-            order,
-            limit: size,
-            offset,
-        });
-        return new Response(200, products);
+        const productSortedSet = await client.zRange(productByScoreKey("review_count"), 0, -1);
+        const productHashPromises = productSortedSet.map(key => client.hGetAll(productHashKey(key)));
+        const productHash = await Promise.all(productHashPromises);
+        const productResults = productHash.map(item => deserializeProduct(item));
+        return new Response(200, productResults);
     } catch (e) {
         console.error(e);
-        return new Response(500, "Server have problem");
+        try {
+            products = await db.Product.findAll({
+                attributes: [
+                    'id',
+                    'name',
+                    'images',
+                    'real_price',
+                    'sale_price',
+                    'createdAt',
+                    [db.sequelize.fn('COUNT', db.sequelize.col('reviews.id')), 'review_count'],
+                ],
+                include: {
+                    model: db.ReviewProduct,
+                    as: 'reviews',
+                    attributes: [],
+                    duplicating: false,
+                },
+                group: ['Product.id'],
+                order,
+                limit: size,
+                offset,
+            });
+            return new Response(200, products);
+        } catch (e) {
+            console.error(e);
+            return new Response(500, "Server have problem");
+        }
     }
 }
 
 const getProductByRatingAverageService = async (offset, size, order) => {
     try {
-        products = await db.Product.findAll({
-            attributes: [
-                'id',
-                'name',
-                'images',
-                'real_price',
-                'sale_price',
-                'createdAt',
-                [db.sequelize.fn('AVG', db.sequelize.col('reviews.star')), 'rating_avg'],
-            ],
-            include: {
-                model: db.ReviewProduct,
-                as: 'reviews',
-                attributes: [],
-                duplicating: false,
-            },
-            group: ['Product.id'],
-            order,
-            limit: size,
-            offset,
-        });
-        return new Response(200, products);
+        const productSortedSet = await client.zRange(productByScoreKey("review_avg"), 0, -1);
+        const productHashPromises = productSortedSet.map(key => client.hGetAll(productHashKey(key)));
+        const productHash = await Promise.all(productHashPromises);
+        const productResults = productHash.map(item => deserializeProduct(item));
+        return new Response(200, productResults);
     } catch (e) {
-        console.error(e);
-        return new Response(500, "Server have problem");
+        try {
+            products = await db.Product.findAll({
+                attributes: [
+                    'id',
+                    'name',
+                    'images',
+                    'real_price',
+                    'sale_price',
+                    'createdAt',
+                    [db.sequelize.fn('AVG', db.sequelize.col('reviews.star')), 'rating_avg'],
+                ],
+                include: {
+                    model: db.ReviewProduct,
+                    as: 'reviews',
+                    attributes: [],
+                    duplicating: false,
+                },
+                group: ['Product.id'],
+                order,
+                limit: size,
+                offset,
+            });
+            return new Response(200, products);
+        } catch (e) {
+            console.error(e);
+            return new Response(500, "Server have problem");
+        }
     }
 }
 
 const getTopDiscountProductService = async (offset, size, order) => {
     try {
-        products = await db.Product.findAll({
-            attributes: [
-                'id',
-                'name',
-                'images',
-                'real_price',
-                'sale_price',
-                'createdAt',
-                [
-                    db.sequelize.literal('((real_price - sale_price) * 100 / real_price) '),
-                    'discount'
-                ]
-            ],
-            order,
-            limit: size,
-            offset,
-        });
-        return new Response(200, products);
+        const productSortedSet = await client.zRange(productByScoreKey("discount"), 0, -1);
+        const productHashPromises = productSortedSet.map(key => client.hGetAll(productHashKey(key)));
+        const productHash = await Promise.all(productHashPromises);
+        const productResults = productHash.map(item => deserializeProduct(item));
+        return new Response(200, productResults);
     } catch (e) {
-        console.error(e);
-        return new Response(500, "Server have problem");
+        try {
+            products = await db.Product.findAll({
+                attributes: [
+                    'id',
+                    'name',
+                    'images',
+                    'real_price',
+                    'sale_price',
+                    'createdAt',
+                    [
+                        db.sequelize.literal('((real_price - sale_price) * 100 / real_price) '),
+                        'discount'
+                    ]
+                ],
+                order,
+                limit: size,
+                offset,
+            });
+            return new Response(200, products);
+        } catch (e) {
+            console.error(e);
+            return new Response(500, "Server have problem");
+        }
     }
-
 }
 
 const generateProductService = async (userId, data, categories) => {
@@ -250,7 +280,7 @@ const getProductsService = async (categoryIds, search, minPrice, maxPrice, offse
         return new Response(200, {
             itemCount: productsAndCount.count,
             products: productsAndCount.rows,
-            pageCount: Math.ceil(productsAndCount.count / size) 
+            pageCount: Math.ceil(productsAndCount.count / size)
         });
     } catch (e) {
         console.error(e);
@@ -258,11 +288,230 @@ const getProductsService = async (categoryIds, search, minPrice, maxPrice, offse
     }
 }
 
-// zScore for order type - price_products, newest_product, discount_products, rating_products
-// Hash for product info - product info
-// Set for product id - product#[id]
+const loadProductDatabaseToCacheService = async () => {
+    // set product
+    const products = [];
+
+    // get products order by rating count
+    const rating_count_products = (await db.Product.findAll({
+        attributes: [
+            'id',
+            'name',
+            'images',
+            'real_price',
+            'sale_price',
+            'createdAt',
+            [db.sequelize.fn('COUNT', db.sequelize.col('reviews.id')), 'review_count'],
+        ],
+        include: {
+            model: db.ReviewProduct,
+            as: 'reviews',
+            attributes: [],
+            duplicating: false,
+        },
+        group: ['Product.id'],
+        order: [
+            [db.sequelize.literal('review_count'), 'DESC']
+        ],
+        limit: 20,
+        offset: 0,
+    })).map(item => item.dataValues);
+
+    for (let i = 0; i < rating_count_products.length; i++) {
+        await client.zAdd(productByScoreKey("review_count"), {
+            value: rating_count_products[i].id + "",
+            score: rating_count_products[i].review_count
+        })
+    }
+
+    products.push(...rating_count_products);
+
+    // get products order by rating avg
+    const rating_avg_products = (await db.Product.findAll({
+        attributes: [
+            'id',
+            'name',
+            'images',
+            'real_price',
+            'sale_price',
+            'createdAt',
+            [db.sequelize.fn('AVG', db.sequelize.col('reviews.id')), 'review_avg'],
+        ],
+        include: {
+            model: db.ReviewProduct,
+            as: 'reviews',
+            attributes: [],
+            duplicating: false,
+        },
+        group: ['Product.id'],
+        order: [
+            [db.sequelize.literal('review_avg'), 'DESC']
+        ],
+        limit: 20,
+        offset: 0,
+    })).map(item => item.dataValues);
+
+    for (let i = 0; i < rating_avg_products.length; i++) {
+        await client.zAdd(productByScoreKey("review_avg"), {
+            value: rating_avg_products[i].id + "",
+            score: rating_avg_products[i].review_avg
+        })
+    }
+
+    products.push(...rating_avg_products);
 
 
+    // get products by price desc
+    const price_desc_products = (await db.Product.findAll({
+        attributes: [
+            'id',
+            'name',
+            'images',
+            'real_price',
+            'sale_price',
+            'createdAt',
+            [db.sequelize.fn('COUNT', db.sequelize.col('reviews.id')), 'review_count'],
+        ],
+        include: {
+            model: db.ReviewProduct,
+            as: 'reviews',
+            attributes: [],
+            duplicating: false,
+        },
+        group: ['Product.id'],
+        order: [
+            [db.sequelize.literal('sale_price'), 'DESC']
+        ],
+        limit: 20,
+        offset: 0,
+    })).map(item => item.dataValues);
+
+    for (let i = 0; i < price_desc_products.length; i++) {
+        await client.zAdd(productByScoreKey("price_desc"), {
+            value: price_desc_products[i].id + "",
+            score: price_desc_products[i].sale_price
+        })
+    }
+
+    products.push(...price_desc_products.filter(f => !products.some(s => s.id == f.id)));
+
+    // get products by price asc
+    const price_asc_products = (await db.Product.findAll({
+        attributes: [
+            'id',
+            'name',
+            'images',
+            'real_price',
+            'sale_price',
+            'createdAt',
+            [db.sequelize.fn('COUNT', db.sequelize.col('reviews.id')), 'review_count'],
+        ],
+        include: {
+            model: db.ReviewProduct,
+            as: 'reviews',
+            attributes: [],
+            duplicating: false,
+        },
+        group: ['Product.id'],
+        order: [
+            [db.sequelize.literal('sale_price'), 'ASC']
+        ],
+        limit: 20,
+        offset: 0,
+    })).map(item => item.dataValues);
+
+    for (let i = 0; i < price_asc_products.length; i++) {
+        await client.zAdd(productByScoreKey("price_asc"), {
+            value: price_asc_products[i].id + "",
+            score: price_asc_products[i].sale_price
+        })
+    }
+
+    products.push(...price_asc_products.filter(f => !products.some(s => s.id == f.id)));
+
+    // get products by created time
+    const newest_products = (await db.Product.findAll({
+        attributes: [
+            'id',
+            'name',
+            'images',
+            'real_price',
+            'sale_price',
+            'createdAt',
+            [db.sequelize.fn('COUNT', db.sequelize.col('reviews.id')), 'review_count'],
+        ],
+        include: {
+            model: db.ReviewProduct,
+            as: 'reviews',
+            attributes: [],
+            duplicating: false,
+        },
+        group: ['Product.id'],
+        order: [
+            [db.sequelize.literal('createdAt'), 'DESC']
+        ],
+        limit: 20,
+        offset: 0,
+    })).map(item => item.dataValues);
+
+    for (let i = 0; i < newest_products.length; i++) {
+        await client.zAdd(productByScoreKey("newest"), {
+            value: newest_products[i].id + "",
+            score: (new Date(newest_products[i].createdAt)).getTime()
+        })
+    }
+
+    products.push(...newest_products.filter(f => !products.some(s => s.id == f.id)));
+
+    // get products by discount price
+    const discount_products = (await db.Product.findAll({
+        attributes: [
+            'id',
+            'name',
+            'images',
+            'real_price',
+            'sale_price',
+            'createdAt',
+            [
+                db.sequelize.literal('((real_price - sale_price) * 100 / real_price) '),
+                'discount'
+            ]
+        ],
+        order: [
+            [
+                [db.sequelize.literal('discount'), 'DESC']
+            ]
+        ],
+        limit: 20,
+        offset: 0,
+    })).map(item => item.dataValues);
+
+    for (let i = 0; i < discount_products.length; i++) {
+        await client.zAdd(productByScoreKey("discount"), {
+            value: discount_products[i].id + "",
+            score: discount_products[i].discount
+        })
+    }
+
+    products.push(...discount_products.filter(f => !products.some(s => s.id == f.id)));
+
+    for (let i = 0; i < products.length; i++) {
+        await client.hSet(productHashKey(products[i].id), {
+            ...products[i],
+            createdAt: products[i].createdAt + ""
+        });
+        await client.sAdd(productSetKey(), products[i].id + "");
+    }
+}
+
+
+const deserializeProduct = (product) => {
+    return {
+        ...product,
+        sale_price: parseInt(product.sale_price),
+        real_price: parseInt(product.real_price)
+    }
+}
 
 module.exports = {
     generateProductService,
@@ -271,5 +520,6 @@ module.exports = {
     getProductByRatingAverageService,
     getTopDiscountProductService,
     getProductByIdService,
-    getProductsService
+    getProductsService,
+    loadProductDatabaseToCacheService
 }
