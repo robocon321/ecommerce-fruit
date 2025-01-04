@@ -1,17 +1,22 @@
-const config = require('./src/config/sequelize.config')
+const sequelizeConfig = require('./src/config/sequelize.config')
+const client = require('./src/connect/redis.connect');
 
-const authRoute = require('./src/routes/AuthRoute')
-const userRoute = require('./src/routes/UserRoute')
-const roleRoute = require('./src/routes/RoleRoute')
-const categoryRoute = require('./src/routes/CategoryRoute')
-const productRoute = require('./src/routes/ProductRoute')
-const reviewProductRoute = require('./src/routes/ReviewProductRoute')
-const blogRoute = require('./src/routes/BlogRoute')
-const reviewBlogRoute = require('./src/routes/ReviewBlogRoute')
-const wishlistRoute = require('./src/routes/WishlistRoute')
-const cartRoute = require('./src/routes/CartRoute')
-const orderRoute = require('./src/routes/OrderRoute')
-const codeRoute = require('./src/routes/CodeRoute')
+const authRoute = require('./src/routes/auth.route')
+const userRoute = require('./src/routes/user.route')
+const roleRoute = require('./src/routes/role.route')
+const categoryRoute = require('./src/routes/category.route')
+const productRoute = require('./src/routes/product.route')
+const reviewProductRoute = require('./src/routes/review_product.route')
+const blogRoute = require('./src/routes/blog.route')
+const reviewBlogRoute = require('./src/routes/review_blog.route')
+const wishlistRoute = require('./src/routes/wishlist.route')
+const cartRoute = require('./src/routes/cart.route')
+const orderRoute = require('./src/routes/order.route')
+const codeRoute = require('./src/routes/code.route')
+
+const {
+  loadUserFromDatabaseToCacheService
+} = require('./src/services/auth.service');
 
 const express = require('express');
 const bodyParser = require('body-parser')
@@ -25,6 +30,9 @@ var helmet = require('helmet');
 
 // compress response from backend to frontend
 var compression = require('compression');
+const {
+  loadProductDatabaseToCacheService
+} = require('./src/services/product.service');
 
 const app = express()
 
@@ -33,7 +41,9 @@ app.use(cors());
 app.use(helmet());
 app.use(compression());
 app.use(bodyParser.json()) // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-data
+app.use(bodyParser.urlencoded({
+  extended: true
+})) // for parsing application/x-www-form-data
 app.use(express.static('public'))
 
 app.use("/", authRoute);
@@ -64,6 +74,35 @@ app.use((error, req, res, next) => {
   return res.status(statusCode).json(error.message);
 });
 
-app.listen(config.app.port, () => {
-  console.log(`Example app listening on port ${config.app.port}`)
+
+const server = app.listen(sequelizeConfig.app.port, async () => {
+  // clear redis storage
+  try {
+    await client.flushAll('ASYNC');
+    console.log("Flush redis storage successfully!");
+  } catch (e) {
+    console.error("Flush redis storage failed", e);
+  }
+
+  // load database to cache
+  try {
+    const start = performance.now();
+
+    const loadUserPromise = loadUserFromDatabaseToCacheService();
+    const loadProductPromise = loadProductDatabaseToCacheService();
+
+    await Promise.all([loadUserPromise, loadProductPromise]);
+
+    // await loadUserFromDatabaseToCacheService();
+    // await loadProductDatabaseToCacheService();
+
+    const end = performance.now();
+    console.log(end - start);  
+  } catch (e) {
+    console.error("Load redis storage have problem", e);
+  }
+
+  console.log("Load redis storage successfully!");
+
+  console.log(`Example app listening on port ${sequelizeConfig.app.port}`)
 });

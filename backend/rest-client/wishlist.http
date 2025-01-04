@@ -1,7 +1,7 @@
 ###
 POST http://localhost:8080/wishlist
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDIwMzA5NjIsImlhdCI6MTcwMjAyMzc2Mn0.W27wHuG8pT6mqJVQxkNjbEuBwRjCEjRDvWxoMV5JZGI
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDczNzMwMTcsImlhdCI6MTcwNzM2NTgxN30.WZqor2dnoNk2pv6alxDMZQIrRqbcGu5JnwgDySbDPYY
 
 {
     "product_id": 10
@@ -10,7 +10,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDIw
 ###
 DELETE http://localhost:8080/wishlist
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDIwMzA5NjIsImlhdCI6MTcwMjAyMzc2Mn0.W27wHuG8pT6mqJVQxkNjbEuBwRjCEjRDvWxoMV5JZGI
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDczNzMwMTcsImlhdCI6MTcwNzM2NTgxN30.WZqor2dnoNk2pv6alxDMZQIrRqbcGu5JnwgDySbDPYY
 
 {
     "product_id": 10

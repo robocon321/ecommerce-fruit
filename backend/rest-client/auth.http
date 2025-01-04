@@ -6,7 +6,7 @@ POST http://localhost:8080/register
 content-type: application/json
 
 {
-    "username": "robocon321",
+    "username": "robocon321c",
     "password": "0123456789"
 }
 
@@ -15,12 +15,11 @@ POST http://localhost:8080/login
 content-type: application/json
 
 {
-    "username": "robocon321",
+    "username": "robocon321b",
     "password": "0123456789"
 }
 
 ###
 POST http://localhost:8080/loadUser
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDIxMDMyOTYsImlhdCI6MTcwMjA5NjA5Nn0.ouvXKiXcO-5b47y_Ay-E4c6PpiqK5cp2kRgO1R7SQ2g
-
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjozNiwiZXhwIjoxNzA3NDc0MTg3LCJpYXQiOjE3MDc0NjY5ODd9.UEnVeai97FxMf5b8P-BbGYbwqf50Tf1Ww0Joo0fxZYI
 ### </Auth>

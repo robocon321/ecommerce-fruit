@@ -84,7 +84,7 @@ const generateProductId = async () => {
 }
 
 const generateBlogId = async () => {
-    const blogIds = (await db.Product.findAll({
+    const blogIds = (await db.Blog.findAll({
         attributes: ['id']
     })).map(item => item.id);
 

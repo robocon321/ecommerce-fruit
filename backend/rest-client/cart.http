@@ -1,7 +1,7 @@
 ###
 POST http://localhost:8080/cart
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDIxMDUxNzQsImlhdCI6MTcwMjA5Nzk3NH0.KzSYSs07iSHbTwNn3ibstCrbc1-kLfcz4J5HU4G64mU
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDczMDI1MDcsImlhdCI6MTcwNzI5NTMwN30.FKdluRWxiPFjLfG43S2FAtiWBcWfqaLOJ4zT5vzMbrI
 
 {
     "product_id": 1,
@@ -11,16 +11,16 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDIx
 ###
 DELETE http://localhost:8080/cart
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDIwNjI2OTEsImlhdCI6MTcwMjA1NTQ5MX0.A7GX0OkXdk8Yzi2FnPDWBiRon1-iH_g5wFkWiMZYRg8
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDczMDI1MDcsImlhdCI6MTcwNzI5NTMwN30.FKdluRWxiPFjLfG43S2FAtiWBcWfqaLOJ4zT5vzMbrI
 
 {
-    "product_id": 10
+    "product_id": 1
 }
 
 ###
 PUT http://localhost:8080/cart/multi
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDIxMjQxODAsImlhdCI6MTcwMjExNjk4MH0.ZYiAgXbUVDIqO_vKx5siLAeU1-zLRLLDTNJelrObhc0
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDczMDI1MDcsImlhdCI6MTcwNzI5NTMwN30.FKdluRWxiPFjLfG43S2FAtiWBcWfqaLOJ4zT5vzMbrI
 
 [{
     "product_id": 1,

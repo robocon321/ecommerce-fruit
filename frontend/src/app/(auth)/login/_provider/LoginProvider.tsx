@@ -30,13 +30,13 @@ const LoginProvider = (props: any) => {
         });
         await login(loginRequest)
         .then(data => {
-            localStorage.setItem("token", data.token);
+            localStorage.setItem("token", data);
             setStatus({
                 isLoading: false,
                 message: 'Successfully',
                 error: ''
             });
-            window.location.href = "/home";
+            // window.location.href = "/home";
         })
         .catch(error => {
             setStatus({

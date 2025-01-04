@@ -1,7 +1,7 @@
 ###
 POST http://localhost:8080/review-product
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDIwMTA2OTcsImlhdCI6MTcwMjAwMzQ5N30.EQggfpbZBszLIzmtyoAayoRCNJHFFZS8Ej8eNmy4K0c
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJleHAiOjE3MDczNzMwMTcsImlhdCI6MTcwNzM2NTgxN30.WZqor2dnoNk2pv6alxDMZQIrRqbcGu5JnwgDySbDPYY
 
 {
     "star": 5,

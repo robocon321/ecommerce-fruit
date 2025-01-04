@@ -2,12 +2,12 @@ import {
   MainContext,
   MainContextType,
 } from "@/app/(main)/_provider/MainProvider";
+import { removeCart, saveCart } from "@/services/CartService";
 import { removeWishlist, saveWishlist } from "@/services/WishlistService";
+import { CartInfoResponse } from "@/types/response/CartResponse";
+import { ProductDiscountSummaryResponse } from "@/types/response/ProductResponse";
 import { useCallback, useContext, useMemo } from "react";
 import { toast } from "react-toastify";
-import { ProductDiscountSummaryResponse } from "@/types/response/ProductResponse";
-import { removeCart, saveCart } from "@/services/CartService";
-import { CartSummaryResponse } from "@/types/response/CartResponse";
 
 export default function ProductCard(props: ProductDiscountSummaryResponse) {
   const { user, setUser } = useContext(MainContext) as MainContextType;
@@ -141,7 +141,7 @@ export default function ProductCard(props: ProductDiscountSummaryResponse) {
               ...user,
               products_cart: [...user.products_cart, {
                 ...props,
-                cart_info: (response as CartSummaryResponse)
+                cart_info: (response as CartInfoResponse)
               }],
             });
             toast.info("Add cart successfully", {
@@ -190,7 +190,7 @@ export default function ProductCard(props: ProductDiscountSummaryResponse) {
         }}
       >
         <div className="product__discount__percent">
-          -{Math.ceil(props.discount)}%
+          -{Math.ceil((props.real_price - props.sale_price) * 100 / props.real_price)}%
         </div>
         <ul className="product__item__pic__hover">
           <li

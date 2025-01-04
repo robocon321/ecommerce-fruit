@@ -20,6 +20,6 @@ export type CartProductResponse = {
     real_price: number,
     sale_price: number,
     images: string[],
-    stock: number,
+    stock:  number,
     cart_info: CartInfoResponse
 }

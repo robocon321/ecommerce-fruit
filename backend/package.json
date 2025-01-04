@@ -20,6 +20,7 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "mysql2": "^3.6.5",
+    "redis": "^4.6.12",
     "sequelize": "^6.35.1"
   },
   "devDependencies": {

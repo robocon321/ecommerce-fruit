@@ -2,20 +2,8 @@ const {
     Sequelize,
     DataTypes
 } = require('sequelize');
-const config = require('../config/sequelize.config.js');
 
-const sequelize = new Sequelize(config.db.database, config.db.username, config.db.password, {
-    host: config.db.host,
-    port: config.db.port,
-    dialect: config.db.type,
-    logging: false
-});
-
-sequelize.authenticate().then(() => {
-    console.log('Connection has been established successfully.');
-}).catch((error) => {
-    console.error('Unable to connect to the database: ', error);
-});
+const sequelize = require('../connect/sequelize.connect.js');
 
 const db = {}
 
@@ -99,13 +87,15 @@ db.Blog.belongsTo(db.User, {
 db.Blog.belongsToMany(db.Category, {
     foreignKey: 'blog_id',
     through: 'BlogCategories',
-    timestamps: false
+    timestamps: false,
+    as: 'categories'
 });
 
 db.Category.belongsToMany(db.Blog, {
     foreignKey: 'category_id',
     through: 'BlogCategories',
-    timestamps: false
+    timestamps: false,
+    as: 'blogs'
 });
 
 db.Blog.hasMany(db.ReviewBlog, {
@@ -121,7 +111,6 @@ db.User.hasMany(db.ReviewBlog, {
 db.ReviewBlog.belongsTo(db.User, {
     foreignKey: 'user_id'
 });
-
 
 db.User.belongsToMany(db.Product, {
     foreignKey: 'user_id',
