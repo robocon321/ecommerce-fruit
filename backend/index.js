@@ -38,7 +38,9 @@ const app = express()
 
 app.use(morgan('combined'));
 app.use(cors());
-app.use(helmet());
+app.use(helmet({
+    crossOriginResourcePolicy: false,
+  }));
 app.use(compression());
 app.use(bodyParser.json()) // for parsing application/json
 app.use(bodyParser.urlencoded({

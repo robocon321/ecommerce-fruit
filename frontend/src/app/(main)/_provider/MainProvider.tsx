@@ -3,12 +3,19 @@
 import Loading from "@/components/Loading/Loading";
 import { loadUser } from "@/services/AuthService";
 import { UserDetailResponse } from "@/types/response/UserResponse";
-import { Dispatch, SetStateAction, createContext, useCallback, useEffect, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  createContext,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 export type MainContextType = {
-  user: UserDetailResponse | undefined,
-  isLoading: boolean,
-  setUser: Dispatch<SetStateAction<UserDetailResponse | undefined>>
+  user: UserDetailResponse | undefined;
+  isLoading: boolean;
+  setUser: Dispatch<SetStateAction<UserDetailResponse | undefined>>;
 };
 
 export const MainContext = createContext<MainContextType | null>(null);
@@ -24,7 +31,7 @@ const MainProvider = (props: any) => {
   const loadData = useCallback(async () => {
     await loadUser()
       .then((response) => {
-        setUser(response);
+        if (response != null) setUser(response);
       })
       .finally(() => {
         setIsLoading(false);
@@ -34,7 +41,7 @@ const MainProvider = (props: any) => {
   const value = {
     user,
     isLoading,
-    setUser
+    setUser,
   };
 
   if (isLoading) {
